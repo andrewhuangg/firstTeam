@@ -1,4 +1,4 @@
-import $ from 'jQuery';
+// import $ from 'jQuery';
 
 export const getAllStats = () => {
   return (
@@ -71,5 +71,3 @@ export const getGame = (id) => {
     })
   );
 };
-
-getAllStats();
