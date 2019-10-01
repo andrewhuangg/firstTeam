@@ -1,72 +1,53 @@
-import * as NBAUtil from '../nba_util';
 import { 
   select,
-  arc
+  csv,
+  scaleLinear,
+  max,
+  scaleBand,
+  axisLeft,
+  axisBottom
  } from 'd3';
 
-//svg
 const svg = select('svg');
+const width = +svg.attr('width');
+const height = +svg.attr('height');
 
-//size of svg
-const height = parseFloat(svg.attr('height'));
-const width = parseFloat(svg.attr('width'));
-const g = svg.append('g')
-  .attr('transform', `translate(${width / 2}, ${height / 2})`);
+const render = data => {
+  const xValue = d => d.population;
+  const yValue = d => d.country;
+  const margin = { top: 20, right: 20, bottom: 20, left: 100};
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
 
-const circle = g.append('circle')
-.attr('r', height / 2)
-.attr('fill', 'yellow')
-.attr('stroke', 'black')
+  const xScale = scaleLinear()
+    .domain([0, max(data, xValue)])
+    .range([0, innerWidth]);
 
-//svg variables
-const eyeSpacing = 100;
-const eyeOffSet = -70;
-const eyeRadius = 40;
-const eyebrowWidth = 70;
-const eyebrowHeight = 15;
-const eyebrowOffset = -70;
+  const yScale = scaleBand()
+  .domain(data.map(yValue))
+  .range([0, innerHeight])
+  .padding(0.1);
+  
+  const yAxis = axisLeft(yScale);
+  const xAxis = axisBottom(xScale);
 
-const eyesG = g
-  .append('g')
-    .attr('transform', `translate(0, ${eyeOffSet})`);
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-const leftEye = eyesG
-  .append('circle')
-    .attr('r', eyeRadius)
-    .attr('cx', -eyeSpacing);
+  g.append('g').call(yAxis);
+  g.append('g').call(xAxis)
+    .attr('transform', `translate(0, ${innerHeight})`);
 
-const rightEye = eyesG
-  .append('circle')
-    .attr('r', eyeRadius)
-    .attr('cx', eyeSpacing);
+  g.selectAll('rect').data(data)
+    .enter().append('rect')
+      .attr('y', d => yScale(yValue(d)))
+      .attr('width', d => xScale(xValue(d)))
+      .attr('height', yScale.bandwidth());
+};
 
-const eyebrowsG = eyesG
-  .append('g')
-    .attr('transform', `translate(0, ${eyebrowOffset})`);
-
-eyebrowsG
-  .transition().duration(2000)
-    .attr('transform', `translate(0, ${eyebrowOffset - 50})`)
-  .transition().duration(2000)
-    .attr('transform', `translate(0, ${eyebrowOffset})`);
-
-const leftEyebrow = eyebrowsG
-  .append('rect')
-    .attr('x', -eyeSpacing - eyebrowWidth / 2)
-    .attr('width', eyebrowWidth)
-    .attr('height', eyebrowHeight);
-
-const rightEyebrow = eyebrowsG
-  .append('rect')
-    .attr('x', eyeSpacing - eyebrowWidth / 2)
-    .attr('width', eyebrowWidth)
-    .attr('height', eyebrowHeight);
-
-const mouth = g
-  .append('path')
-    .attr('d', arc() ({
-    innerRadius: 150,
-    outerRadius: 170,
-    startAngle: Math.PI / 2,
-    endAngle: Math.PI * 3 / 2
-  }));
+csv('../data/data.csv').then(data => {
+  data.forEach(d => {
+    d.population = +d.population * 1000;
+  });
+  render(data);
+});
