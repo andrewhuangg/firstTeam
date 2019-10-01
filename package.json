@@ -13,15 +13,8 @@
   "dependencies": {
     "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
-    "@babel/preset-react": "^7.0.0",
-    "ajax": "0.0.4",
     "babel-loader": "^8.0.6",
-    "jquery": "^3.4.1",
-    "react": "^16.10.1",
-    "react-dom": "^16.10.1",
-    "react-redux": "^7.1.1",
-    "react-router-dom": "^5.1.1",
-    "redux": "^4.0.4",
+    "jQuery": "^1.7.4",
     "webpack": "^4.41.0"
   },
   "devDependencies": {

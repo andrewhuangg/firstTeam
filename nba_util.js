@@ -1,3 +1,5 @@
+import $ from 'jQuery';
+
 export const getAllStats = () => {
   return (
     $.ajax({
@@ -69,3 +71,5 @@ export const getGame = (id) => {
     })
   );
 };
+
+getAllStats();
