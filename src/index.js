@@ -1,6 +1,7 @@
 import { 
   select,
   csv,
+  json,
   scaleLinear,
   max,
   scaleBand,
