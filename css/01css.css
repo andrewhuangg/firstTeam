@@ -1,3 +1,11 @@
+.container {
+  border: solid black 1px;
+}
+.svg {
+  border: solid black .5px;
+  margin: 1px;
+}
+
 body {
   margin: 0px;
   overflow: scroll;
@@ -5,7 +13,6 @@ body {
 
 rect {
   fill: steelblue;
-  opacity: 0.5;
 }
 
 text {
@@ -14,21 +21,19 @@ text {
 }
 
 .tick text {
-  font-size: 1em;
   fill: #635F5D;
 }
 
 .tick line {
-  stroke: #C0C0BB
+  stroke: #C0C0BB;
 }
 
-.axis-label {
-  font-size: 5em;
+.xLabel {
+  font-size: 1.5em;
   fill: #8E8883;
 }
 
-
 .title {
-  font-size: 3em;
-  fill: #635F5D;
+  font-size: 1em;
+  fill: #8E8883;
 }
