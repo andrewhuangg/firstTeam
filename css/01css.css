@@ -1,7 +1,7 @@
-.container {
+.master {
   border: solid black 1px;
 }
-.svg {
+#sznPg {
   border: solid black .5px;
   margin: 1px;
 }
@@ -15,9 +15,8 @@ rect {
   fill: steelblue;
 }
 
-text {
-  font-size: 1em;
-  font-family: sans-serif;
+.barValues {
+  font-size: 0.7em;
 }
 
 .tick text {

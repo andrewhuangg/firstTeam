@@ -13,18 +13,10 @@ import {
   format
 } from 'd3';
 
-// barGroups
-//     .append('text')
-//   .attr('class', 'value')
-//   .attr('x', d => xScale(d.Player) + xScale.bandwidth() / 2)
-//   .attr('y', d => yScale(d.PTS) + 30)
-//   .attr('text-anchor', 'middle')
-//   .text(d => `${d.PTS}`)
 
-
-const svg = select('svg');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
+const svgPg = select('#sznPg');
+const width = +svgPg.attr('width');
+const height = +svgPg.attr('height');
 
 /*
 .data(data) is a data join with three cases, 'enter', 'update', 'exit' 
@@ -39,9 +31,9 @@ the dom elements, (the rectangles)
 const render = data => {
   const margin = { top: 80, bottom: 20, right: 20, left: 130 };
   const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom
-  const xValue = d => d.PTS
-  const yValue = d => d.Player
+  const innerHeight = height - margin.top - margin.bottom;
+  const xValue = d => d.PTS;
+  const yValue = d => d.Player;
 
   const xScale = scaleLinear()
     .domain([0, max(data, xValue)])
@@ -52,7 +44,7 @@ const render = data => {
     .range([0, innerHeight])
     .padding(0.2) //padding on the yscale (the bars)
   
-  const g = svg.append('g')
+  const g = svgPg.append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
   
   g.append('g')
@@ -82,9 +74,21 @@ const render = data => {
       .attr('y', d => yScale(yValue(d)))
       .attr('width', d => xScale(xValue(d))) // d is one row of our data table returns linear scale of (domain)
       .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
+      .attr('class', 'bar')
 
+  g.selectAll('bar')
+    .data(data)
+    .enter()
+    .append('text')
+    .attr('class', 'barValues')
+    .attr('y', d => yScale(yValue(d)) + 15)
+    .attr('x', d => xScale(xValue(d)) - 12)
+    .attr('text-anchor', 'middle')
+    .text(d => `${xValue(d)}`)
+
+    console.log(data)
   //svg header
-  svg.append('text')
+  svgPg.append('text')
     .attr('class', 'title')
     .text('2018 PGs Avgs +10Pts +10MP')
     .attr('transform', `translate(${margin.left / 2}, ${margin.top - 50})`)
@@ -92,37 +96,63 @@ const render = data => {
 
 csv('../data/playerSeasonAvg.csv')
   .then(data => {
-    let filtered = data
-      .filter(d => d.PTS > 10 && d.MP > 10 && d.Pos === 'PG')
 
-    filtered.sort((a, b) => b.PTS - a.PTS).forEach(d => {
-      d.Player;
-      d.PTS;
-      // d.Age;
-      // d.G;
-      // d.MP;
-      // d.FG;
-      // d.FGpct;
-      // d.threeP;
-      // d.threePpct;
-      // d.twoP;
-      // d.twoPpct;
-      // d.eFGpct;
-      // d.FT;
-      // d.FTpct;
-      // d.TRB;
-      // d.AST;
-      // d.STL;
-      // d.BLK;
-      // d.TOV;
-      // d.PF;
-    });
-    render(filtered);
+    const filtered = data
+      .sort((a, b) => b.PTS - a.PTS)
+      .filter(d => d.Tm !== 'TOT' && d.PTS > 10 && d.MP > 10 && d.Pos === 'PG' && (d.Player !== 'Dennis Smith' && d.Player !== 'Tyler Johnson'))
+
+    filtered
+      .forEach(d => {
+        d.Player = d.Player;
+        d.PTS = +d.PTS;
+        // d.Age;
+        // d.G;
+        // d.MP;
+        // d.FG;
+        // d.FGpct;
+        // d.threeP;
+        // d.threePpct;
+        // d.twoP;
+        // d.twoPpct;
+        // d.eFGpct;
+        // d.FT;
+        // d.FTpct;
+        // d.TRB;
+        // d.AST;
+        // d.STL;
+        // d.BLK;
+        // d.TOV;
+        // d.PF;
+      });
+      render(filtered);
   });
 
-// // csv('../data/playerSeasonAvg.csv')
-// //   .then(data => {
-// //     data.forEach(d => {
-// //     });
-// //     render(data);
-// //   });
+// csv('../data/playerSeasonAvg.csv')
+//   .then(data => {
+//     let filtered = data
+//       .filter(d => d.PTS > 10 && d.MP > 10 && d.Pos === 'SG')
+
+//     filtered.sort((a, b) => b.PTS - a.PTS).forEach(d => {
+//       d.Player;
+//       d.PTS;
+//       // d.Age;
+//       // d.G;
+//       // d.MP;
+//       // d.FG;
+//       // d.FGpct;
+//       // d.threeP;
+//       // d.threePpct;
+//       // d.twoP;
+//       // d.twoPpct;
+//       // d.eFGpct;
+//       // d.FT;
+//       // d.FTpct;
+//       // d.TRB;
+//       // d.AST;
+//       // d.STL;
+//       // d.BLK;
+//       // d.TOV;
+//       // d.PF;
+//     });
+//     render(filtered);
+//   });
