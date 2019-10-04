@@ -57,9 +57,9 @@ const handlePosChange = (e) => {
 
 const handleStatChange = (e) => {
   let key = STAT_TYPE_ARR.indexOf(e.target.value);
-  d3.selectAll('svg > *').remove();
+  d3.selectAll('svg > *').remove()
   loadAvg(playerData).then(data => {
-    render(data, key);
+    render(data, +key);
   });
 };
 
@@ -72,18 +72,32 @@ document.getElementById('posOptions')
 
 
 const render = (data, key) => {
-  // key is number of xValue we want to use
   const margin = { top: 80, bottom: 20, right: 20, left: 130 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const xValue = d => d.PTS;
-  // const xValue = STAT_TYPE_OBJ[`x${key}value`];
+  let stat;
+  if (key) {
+    stat = `z${key.toString()}Value`;
+  } else {
+    stat = '0';
+  }
+  const zValue = STAT_TYPE_OBJ[stat];
   const yValue = d => d.Player;
+
+  console.log(STAT_TYPE_OBJ[stat])
   
   const xScale = scaleLinear()
     .domain([0, max(data, xValue)])
     .range([0, innerWidth])
-    .nice() //an instance of scaleLinear which maps the numbers from the domain to the range(it scales it), domain(the data space, the min and max values of our data), range(the screen space, typically in px coordinates, the width of each bar in pixels)
+    .nice() //an instance of scaleLinear which maps the numbers from the domain to the range(it scales it), domain(the data space, the min and max values of our data), range(the screen space, typically in px coordinates, the width of each bar in pixels)]
+
+  const zScale = scaleLinear()
+    .domain([0, max(data, zValue)])
+    .range([0, innerWidth])
+    .nice()
+
+    console.log(zScale.domain())
 
   const yScale = scaleBand()
     .domain(data.map(yValue))
@@ -104,7 +118,14 @@ const render = (data, key) => {
     .tickPadding(5)
     .tickSize(-innerHeight)
 
+  const zAxis = axisBottom(zScale)
+    .tickPadding(5)
+
   const xAxisG = g.append('g').call(xAxis)
+  const zAxisG = g.append('g').call(zAxis)
+    .attr('transform', `translate(0, ${innerHeight})`)
+    .selectAll('.domain, .tick line')
+    .remove();
     
   //xAxis title
   xAxisG.append('text').text('Points')
@@ -114,6 +135,7 @@ const render = (data, key) => {
     .attr('fill', 'black')
     
   xAxisG.select('.domain').remove();
+  zAxisG.select('.domain').remove();
 
   g.selectAll('rect')
     .data(data)
@@ -145,7 +167,7 @@ const render = (data, key) => {
   svgPg.append('text')
     .attr('class', 'title')
     .text(`2018 ${playerData.Pos} Avgs +10Pts +10MP`)
-    .attr('transform', `translate(${width / 2 - 100}, ${margin.top - 50})`)
+    .attr('transform', `translate(${width / 2 - 100}, ${margin.top - 50})`);
 
   //   zoom
   // svg.call(zoom().on('zoom', () => {

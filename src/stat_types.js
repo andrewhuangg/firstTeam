@@ -1,6 +1,5 @@
 export const STAT_TYPE_ARR = [
   'PTS',
-  'FG',
   'FT',
   'TRB',
   'AST',
@@ -9,11 +8,10 @@ export const STAT_TYPE_ARR = [
 ]
 
 export const STAT_TYPE_OBJ = {
-  'x0Value': d => d.PTS,
-  'x1Value': d => d.FG,
-  'x2Value': d => d.FT,
-  'x3Value': d => d.TRB,
-  'x4Value': d => d.AST,
-  'x5Value': d => d.STL,
-  'x6Value': d => d.BLK
-}
+  'z0Value': d => d.PTS,
+  'z1Value': d => d.FT,
+  'z2Value': d => d.TRB,
+  'z3Value': d => d.AST,
+  'z4Value': d => d.STL,
+  'z5Value': d => d.BLK
+};
