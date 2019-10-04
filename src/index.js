@@ -1,5 +1,6 @@
 import {
   select,
+  selectAll,
   csv,
   scaleLinear,
   max,
@@ -13,16 +14,18 @@ import {
   event
 } from 'd3';
 
+import { STAT_TYPE_ARR, STAT_TYPE_OBJ } from './stat_types';
+
 import { 
   loadAvg,
-  loadPer100
+  loadAst
 } from './loadData';
 
-const svg = select('svg')
-const width = 600; //document.body.clientWidth;
+const svgPg = d3.select('#svgPg')
+const width = 500; //document.body.clientWidth;
 const height = 700;
 
-svg
+svgPg
   .attr('width', width)
   .attr('height', height)
 /*
@@ -37,13 +40,7 @@ the dom elements, (the rectangles)
 */
 
 let playerData = {
-  'Pos': 'Player Position',
-  'AST': 0,
-  'BLK': 0,
-  'STL': 0,
-  'FG': 0,
-  'TRB': 0,
-  'FT': 0,
+  'Pos': 'Player Position'
 };
 
 loadAvg(playerData).then(data => {
@@ -51,37 +48,38 @@ loadAvg(playerData).then(data => {
 });
 
 const handlePosChange = (e) => {
-  playerData.Pos = e.target.value;
+  playerData.Pos = e.target.value
   d3.selectAll('svg > *').remove();
   loadAvg(playerData).then(data => {
     render(data);
   });
 };
-
-let stat;
 
 const handleStatChange = (e) => {
-  playerData[stat] = e.target.value;
+  let key = STAT_TYPE_ARR.indexOf(e.target.value);
   d3.selectAll('svg > *').remove();
   loadAvg(playerData).then(data => {
-    render(data);
+    render(data, key);
   });
 };
-
-document.getElementById('posOptions')
-  .addEventListener('change', handlePosChange)
 
 document.getElementById('statOptions')
   .addEventListener('change', handleStatChange)
 
+document.getElementById('posOptions')
+  .addEventListener('change', handlePosChange)
 
-const render = (data) => {
+
+
+const render = (data, key) => {
+  // key is number of xValue we want to use
   const margin = { top: 80, bottom: 20, right: 20, left: 130 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const xValue = d => d.PTS;
+  // const xValue = STAT_TYPE_OBJ[`x${key}value`];
   const yValue = d => d.Player;
-
+  
   const xScale = scaleLinear()
     .domain([0, max(data, xValue)])
     .range([0, innerWidth])
@@ -92,7 +90,7 @@ const render = (data) => {
     .range([0, innerHeight])
     .padding(0.2) //padding on the yscale (the bars)
   
-  const g = svg.append('g')
+  const g = svgPg.append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`)
     .attr('width', width)
     .attr('height', height)
@@ -122,9 +120,13 @@ const render = (data) => {
     .enter()
     .append('rect')
       .attr('y', d => yScale(yValue(d)))
-      .attr('width', d => xScale(xValue(d))) // d is one row of our data table returns linear scale of (domain)
+      // .attr('width', d => xScale(xValue(d))) // d is one row of our data table returns linear scale of (domain)
+      .attr('width', '0')
       .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
       .attr('class', 'bar')
+      .transition()
+        .duration(1000)
+        .attr('width', d => xScale(xValue(d)))
 
   g.selectAll('bar')
     .data(data)
@@ -136,11 +138,11 @@ const render = (data) => {
       .attr('text-anchor', 'middle')
       .text(d => `${xValue(d)}`)
     .append('title')
-    .text(d => d.Tm)
+      .text(d => d.Tm)
     
 
   //svg header
-  svg.append('text')
+  svgPg.append('text')
     .attr('class', 'title')
     .text(`2018 ${playerData.Pos} Avgs +10Pts +10MP`)
     .attr('transform', `translate(${width / 2 - 100}, ${margin.top - 50})`)

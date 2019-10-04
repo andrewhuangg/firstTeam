@@ -20,32 +20,42 @@ export const loadAvg = (playerData) =>
         d.Player = d.Player;
         d.PTS = +d.PTS;
         d.Tm = d.Tm;
+        d.FG = +d.FG;
+        d.FT = +d.FT;
+        d.TRB = +d.TRB;
+        d.AST = +d.AST;
+        d.STL = +d.STL;
+        d.BLK = +d.BLK;
         // d.Age;
         // d.G;
         // d.MP;
-        d.FG = +d.FG;
         // d.FGpct;
         // d.threeP;
         // d.threePpct;
         // d.twoP;
         // d.twoPpct;
         // d.eFGpct;
-        d.FT = +d.FT;
         // d.FTpct;
-        d.TRB = +d.TRB;
-        d.AST = +d.AST;
-        d.STL = +d.STL;
-        d.BLK = +d.BLK;
         // d.TOV;
         // d.PF;
       });
     return filtered;
   });
 
-export const loadPer100 = (pos) =>
+export const loadAst = (ast) =>
   Promise.all([
-    csv('../data/playerPer100Pos.csv')
-  ]).then(([per100PosData]) => {
+    csv('../data/playerSeasonAvg.csv')
+  ]).then(([seasonAvgData]) => {
 
+    const filtered = seasonAvgData
+      .sort((a, b) => b.PTS - a.PTS)
+      .filter(d => d.Tm !== 'TOT' && d.AST > 4 && d.MP > 10)
 
+    filtered
+      .forEach(d => {
+        d.Player = d.Player;
+        d.Tm = d.Tm;
+        d.AST = +d.AST;
+      });
+    return filtered;
   });
