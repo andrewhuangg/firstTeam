@@ -13,24 +13,31 @@
 </head>
 <body>
   <div class='master'>
-    <div class="dropdown">
-      <select id="options">
-        <option value='PG'>PG</option>
-        <option value='SG'>SG</option>
-        <option value='SG-SF'>SG-SF</option>
-        <option value='SG-PF'>SG-PF</option>
-        <option value='SF'>SF</option>
-        <option value='SF-PF'>SF-PF</option>
-        <option value='PF'>PF</option>
-        <option value='PF-C'>PF-C</option>
-        <option value='C'>C</option>
-      </select>
-    </div>
     <div class="svgContainer">
       <svg class='sznPg'>
       </svg>
     </div>
-
+  </div>
+  <div class="dropdown">
+    <select id="posOptions">
+      <option value="default">Select Position</option>
+      <option value='PG'>PG</option>
+      <option value='SG'>SG</option>
+      <option value='SF'>SF</option>
+      <option value='PF'>PF</option>
+      <option value='C'>C</option>
+    </select>
+  </div>
+  <div class="dropdown">
+    <select id="statOptions">
+      <option value="default">Select Stat</option>
+      <option value='AST'>AST</option>
+      <option value='BLK'>BLK</option>
+      <option value='STL'>STL</option>
+      <option value='FG'>FG</option>
+      <option value='TRB'>TRB</option>
+      <option value='FT'>FT</option>
+    </select>
   </div>
   <script src='bundle.js'></script>
 </body>
