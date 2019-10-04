@@ -1,22 +1,26 @@
 import {
   select,
   csv,
-  json,
   scaleLinear,
   max,
   scaleBand,
   axisLeft,
-  axisBottom,
   axisTop,
   extent,
   bandwidth,
-  format
+  zoom,
+  event
 } from 'd3';
+import { loadData } from './loadData'
 
+const svg = select('svg')
+const width = 300; //document.body.clientWidth;
+const height = 600;
 
-const svgPg = select('#sznPg');
-const width = +svgPg.attr('width');
-const height = +svgPg.attr('height');
+svg
+  .attr('width', width)
+  .attr('height', height)
+
 
 /*
 .data(data) is a data join with three cases, 'enter', 'update', 'exit' 
@@ -28,7 +32,12 @@ the dom elements, (the rectangles)
     the enter selection creates a thing that pertains to all our data elements
     and we use this to create a rect for row of our table
 */
-const render = data => {
+loadData().then(data => {
+  render(data);
+});
+
+
+const render = (data) => {
   const margin = { top: 80, bottom: 20, right: 20, left: 130 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
@@ -44,8 +53,10 @@ const render = data => {
     .range([0, innerHeight])
     .padding(0.2) //padding on the yscale (the bars)
   
-  const g = svgPg.append('g')
-    .attr('transform', `translate(${margin.left}, ${margin.top})`);
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+    .attr('width', width)
+    .attr('height', height)
   
   g.append('g')
     .call(axisLeft(yScale)) //appending new group element where we put the yaxis
@@ -80,79 +91,23 @@ const render = data => {
     .data(data)
     .enter()
     .append('text')
-    .attr('class', 'barValues')
-    .attr('y', d => yScale(yValue(d)) + 15)
-    .attr('x', d => xScale(xValue(d)) - 12)
-    .attr('text-anchor', 'middle')
-    .text(d => `${xValue(d)}`)
+      .attr('class', 'barValues')
+      .attr('y', d => yScale(yValue(d)) + 9)
+      .attr('x', d => xScale(xValue(d)) - 12)
+      .attr('text-anchor', 'middle')
+      .text(d => `${xValue(d)}`)
+    .append('title')
+    .text(d => d.PTS)
+    
 
-    console.log(data)
   //svg header
-  svgPg.append('text')
+  svg.append('text')
     .attr('class', 'title')
     .text('2018 PGs Avgs +10Pts +10MP')
     .attr('transform', `translate(${margin.left / 2}, ${margin.top - 50})`)
+
+    //zoom
+  // svg.call(zoom().on('zoom', () => {
+  //   g.attr('transform', event.transform);
+  // }));
 };
-
-csv('../data/playerSeasonAvg.csv')
-  .then(data => {
-
-    const filtered = data
-      .sort((a, b) => b.PTS - a.PTS)
-      .filter(d => d.Tm !== 'TOT' && d.PTS > 10 && d.MP > 10 && d.Pos === 'PG' && (d.Player !== 'Dennis Smith' && d.Player !== 'Tyler Johnson'))
-
-    filtered
-      .forEach(d => {
-        d.Player = d.Player;
-        d.PTS = +d.PTS;
-        // d.Age;
-        // d.G;
-        // d.MP;
-        // d.FG;
-        // d.FGpct;
-        // d.threeP;
-        // d.threePpct;
-        // d.twoP;
-        // d.twoPpct;
-        // d.eFGpct;
-        // d.FT;
-        // d.FTpct;
-        // d.TRB;
-        // d.AST;
-        // d.STL;
-        // d.BLK;
-        // d.TOV;
-        // d.PF;
-      });
-      render(filtered);
-  });
-
-// csv('../data/playerSeasonAvg.csv')
-//   .then(data => {
-//     let filtered = data
-//       .filter(d => d.PTS > 10 && d.MP > 10 && d.Pos === 'SG')
-
-//     filtered.sort((a, b) => b.PTS - a.PTS).forEach(d => {
-//       d.Player;
-//       d.PTS;
-//       // d.Age;
-//       // d.G;
-//       // d.MP;
-//       // d.FG;
-//       // d.FGpct;
-//       // d.threeP;
-//       // d.threePpct;
-//       // d.twoP;
-//       // d.twoPpct;
-//       // d.eFGpct;
-//       // d.FT;
-//       // d.FTpct;
-//       // d.TRB;
-//       // d.AST;
-//       // d.STL;
-//       // d.BLK;
-//       // d.TOV;
-//       // d.PF;
-//     });
-//     render(filtered);
-//   });

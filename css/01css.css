@@ -1,9 +1,12 @@
 .master {
   border: solid black 1px;
+  display: flex;
+  justify-content: flex-start;
+
 }
-#sznPg {
-  border: solid black .5px;
-  margin: 1px;
+
+.sznPg {
+  border: solid black 0.1px;
 }
 
 body {
@@ -15,8 +18,16 @@ rect {
   fill: steelblue;
 }
 
+rect:hover {
+  fill: rgb(157, 248, 202)
+}
+
 .barValues {
   font-size: 0.7em;
+}
+
+.barValues:hover {
+  fill: white;
 }
 
 .tick text {

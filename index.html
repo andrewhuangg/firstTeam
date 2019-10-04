@@ -12,17 +12,26 @@
   <script src="nba_util.js"></script>
 </head>
 <body>
-  <div class="master">
-    <div class="pg">
-      <svg id="sznPg" width="300" height="1000" >
+  <div class='master'>
+    <div class="dropdown">
+      <select id="options">
+        <option value='PG'>PG</option>
+        <option value='SG'>SG</option>
+        <option value='SG-SF'>SG-SF</option>
+        <option value='SG-PF'>SG-PF</option>
+        <option value='SF'>SF</option>
+        <option value='SF-PF'>SF-PF</option>
+        <option value='PF'>PF</option>
+        <option value='PF-C'>PF-C</option>
+        <option value='C'>C</option>
+      </select>
+    </div>
+    <div class="svgContainer">
+      <svg class='sznPg'>
       </svg>
     </div>
-    <div>
-      <svg id="sznSg" width="300" height="600">
-      </svg>
-    </div>
-    </svg>
+
   </div>
-  <script src="bundle.js"></script>
+  <script src='bundle.js'></script>
 </body>
 </html>
