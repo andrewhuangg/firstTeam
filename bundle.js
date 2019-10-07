@@ -29422,7 +29422,7 @@ let val = null;
 
 const loadAvg = (playerData) => 
   Promise.all([
-    Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/playerSeasonAvg.csv')  
+    Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('./data/playerSeasonAvg.csv')  
   ]).then(([seasonAvgData]) => {
 
     const filtered = seasonAvgData
