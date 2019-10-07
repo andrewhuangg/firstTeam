@@ -8,7 +8,7 @@ let val = null;
 
 export const loadAvg = (playerData) => 
   Promise.all([
-    csv('../data/playerSeasonAvg.csv')  
+    csv('./data/playerSeasonAvg.csv')  
   ]).then(([seasonAvgData]) => {
 
     const filtered = seasonAvgData
