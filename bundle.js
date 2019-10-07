@@ -29407,18 +29407,16 @@ const render = (data, key) => {
 /*!*************************!*\
   !*** ./src/loadData.js ***!
   \*************************/
-/*! exports provided: loadAvg, loadAst */
+/*! exports provided: loadAvg */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadAvg", function() { return loadAvg; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadAst", function() { return loadAst; });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
 let val = null;
-
 
 const loadAvg = (playerData) => 
   Promise.all([
@@ -29452,24 +29450,6 @@ const loadAvg = (playerData) =>
         // d.FTpct;
         // d.TOV;
         // d.PF;
-      });
-    return filtered;
-  });
-
-const loadAst = (ast) =>
-  Promise.all([
-    Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/playerSeasonAvg.csv')
-  ]).then(([seasonAvgData]) => {
-
-    const filtered = seasonAvgData
-      .sort((a, b) => b.PTS - a.PTS)
-      .filter(d => d.Tm !== 'TOT' && d.AST > 4 && d.MP > 10)
-
-    filtered
-      .forEach(d => {
-        d.Player = d.Player;
-        d.Tm = d.Tm;
-        d.AST = +d.AST;
       });
     return filtered;
   });
