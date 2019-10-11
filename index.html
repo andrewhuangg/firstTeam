@@ -10,44 +10,38 @@
   <script src="https://d3js.org/d3.v5.min.js"></script>
 </head>
 <body>
-  <div class='master'>
-    <div class="svgContainer">
-      <svg class="svg" id='svgPg'>
-      </svg>
-      <!-- <svg class="svg" id='svgAst'>
-      </svg> -->
-      <!-- <svg class="svg" id='svgSTL'>
-      </svg>
-      <svg class="svg" id='svgBLK'>
-      </svg>
-      <svg class="svg" id='svgTRB'>
-      </svg>
-      <svg class="svg" id='svgFT'>
-      </svg>
-      <svg class="svg" id='svgFG'> -->
-      </svg>
+  <div id="nav">
+    <h2>NBA DASHBOARD 2016-2019</h2>
+    <p>
+      Current Year: <span id="year-val"></span>
+      <input id="year" type="range" step="1">
+    </p>
+    <p>
+      Select Position:
+      <input type="radio" name="data-type" value="pg" checked>
+      <label>Point Guard</label>      
+      <input type="radio" name="data-type" value="sg" >
+      <label>Shooting Guard</label>
+      <input type="radio" name="data-type" value="sf" >      
+      <label>Small Forward</label>
+      <input type="radio" name="data-type" value="pf" >
+      <label>Power Forward</label>
+      <input type="radio" name="data-type" value="c" >
+      <label>Center</label>
+    </p>
+    <p>Select a year and position to see trends!</p>
+  </div>
+  <section class="container">
+    <div class="chart-container">
+      <svg id="bar"></svg>
     </div>
-  </div>
-  <div class="dropdown">
-    <select id="posOptions">
-      <option value="default">Select Position</option>
-      <option value='PG'>PG</option>
-      <option value='SG'>SG</option>
-      <option value='SF'>SF</option>
-      <option value='PF'>PF</option>
-      <option value='C'>C</option>
-    </select>
-  </div>
-  <div class="dropdown">
-    <select id="statOptions">
-      <option value="default">Select Stat</option>
-      <option value='AST'>AST</option>
-      <option value='BLK'>BLK</option>
-      <option value='STL'>STL</option>
-      <option value='TRB'>TRB</option>
-      <option value='FT'>FT</option>
-    </select>
-  </div>
+    <div class="chart-container right">
+      <svg id="pie"></svg>
+    </div>
+  </section>
+  <div class="tooltip"></div>
+  <script src="bar.js"></script>
+  <script src="pie.js"></script>
   <script src='bundle.js'></script>
 </body>
 </html>
