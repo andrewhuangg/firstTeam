@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -205,14 +205,7 @@ const createPie = (width, height) => {
 const drawPie = (data, currentYear) => {
   let pie = d3.select('#pie');
 
-  let arcs = 
-    d3.pie()
-      .sort((a,b) => {
-        if (a.TM < b.TM) return -1;
-        if (a.TM > b.TM) return 1;
-        return;
-      })
-      .value(d => d.TM);
+  let arcs = d3.pie().value(d => d.Year)
 
   let path = d3.arc()
     .outerRadius(+pie.attr('height') / 2 - 50)
@@ -252,21 +245,8 @@ const drawPie = (data, currentYear) => {
       .attr('d', path);
 
   pie.select('.pie-title')
-    .text('Team Stat Leaders by Team,' + currentYear);
+    .text('Team Stat Leaders by Team, ' + currentYear);
 };
-
-/***/ }),
-
-/***/ 0:
-/*!*****************************************!*\
-  !*** multi ./src/index.js ./src/pie.js ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(/*! /Users/anhuangg/Desktop/firstTeam/src/index.js */"./src/index.js");
-module.exports = __webpack_require__(/*! /Users/anhuangg/Desktop/firstTeam/src/pie.js */"./src/pie.js");
-
 
 /***/ })
 

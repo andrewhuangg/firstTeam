@@ -20,14 +20,7 @@ export const createPie = (width, height) => {
 export const drawPie = (data, currentYear) => {
   let pie = d3.select('#pie');
 
-  let arcs = 
-    d3.pie()
-      .sort((a,b) => {
-        if (a.TM < b.TM) return -1;
-        if (a.TM > b.TM) return 1;
-        return;
-      })
-      .value(d => d.TM);
+  let arcs = d3.pie().value(d => d.Year)
 
   let path = d3.arc()
     .outerRadius(+pie.attr('height') / 2 - 50)
@@ -67,5 +60,5 @@ export const drawPie = (data, currentYear) => {
       .attr('d', path);
 
   pie.select('.pie-title')
-    .text('Team Stat Leaders by Team,' + currentYear);
+    .text('Team Stat Leaders by Team, ' + currentYear);
 };
