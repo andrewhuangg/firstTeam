@@ -32,14 +32,12 @@ d3.queue()
       d3.select('input[name="stat-type"]:checked')
         .attr('value');
 
-    let width = 
-      +d3.select(".chart-container")
-        .node().offsetWidth;
-
+    let pieWidth = 700;
+    let width = 600;
     let pieHeight = 500;
     let height = 500;
     
-    createPie(width, pieHeight);
+    createPie(pieWidth, pieHeight);
     createBar(width, height);
     drawBar(data, currentYear, currentPos, currentStat);
     drawPie(data, currentYear);

@@ -1,3 +1,5 @@
+import { nice } from 'd3';
+
 export const createBar = (width, height) => {
   let bar = 
     d3.select('#bar')
@@ -13,7 +15,6 @@ export const createBar = (width, height) => {
   bar.append('text')
     .attr('transform', 'rotate(-90)')
     .attr('x', - height / 2)
-    .attr('dy', '1em')
     .style('text-anchor', 'middle')
     .style('font-size', '1em')
     .classed('y-axis-label', true);
@@ -38,7 +39,7 @@ export const drawBar = (data, currentYear, currentPos, currentStat) => {
     top: 30,
     right: 30,
     bottom: 30,
-    left: 10
+    left: 10 //10
   };
   let barPadding = 1;
   let width = +bar.attr("width");
@@ -64,14 +65,18 @@ export const drawBar = (data, currentYear, currentPos, currentStat) => {
   let xScale = 
     d3.scaleBand()
       .domain(players.map(d => d.Player))
-      .range([0, width])
-      .padding(0.1)
+      .range([0, innerWidth])
+      // .range([margin.left, width - margin.right])
+      // .padding(0.1)
+      // .range([0, width])
+      // .padding(0.1)
 
   //when we append rect, we need to set range and height to x and yscales
   let yScale = 
     d3.scaleLinear()
       .domain([0, d3.max(players, d => d[currentStat])])
-      .range([innerHeight, 0]);
+      .range([innerHeight, 0])
+      .nice()
 
   let barWidth = yScale(yScale.domain()[0] + 1) - yScale.range()[0];
 
@@ -81,14 +86,14 @@ export const drawBar = (data, currentYear, currentPos, currentStat) => {
 
   // g.append('g').call(yAxis)
   d3.select('.y-axis')
-    .attr('transform', `translate(${margin.left}, 0)`)
+    .attr('transform', `translate(30, 0)`)
     .transition()
     .duration(1000)
     .call(yAxis);
 
   // g.append('g').call(xAxis)
   d3.select('.x-axis')
-    .attr('transform', `translate(0, ${innerHeight - margin.top})`)
+    .attr('transform', `translate(0, ${innerHeight})`)
     .transition()
     .duration(1000)
     .call(xAxis)
@@ -139,10 +144,10 @@ export const drawBar = (data, currentYear, currentPos, currentStat) => {
       .attr('y', height) //how far the bar is from the top of graph
       .attr('height', 0) //where it starts
     .merge(update)
-      .attr('x', d => xScale(d.Player)) //how this is spread across the graph
-      .attr('width', d => xScale.bandwidth()) //how wide the bars are
+      .attr('x', d => xScale(d.Player) + 25) //how this is spread across the graph
+      .attr('width', d => xScale.bandwidth() / 2) //how wide the bars are
       .transition(t)
       .delay((d, i) => i * 100)
-        .attr('y', d => yScale(d[currentStat])) //distance between bar and top of graph
-        .attr('height', d => height - yScale(d[currentStat]) - margin.bottom) //how tall the bars are
+        .attr('y', d => yScale(d[currentStat]) - 60) //distance between bar and top of graph
+        .attr('height', d => height - yScale(d[currentStat]))//- margin.bottom)//- 90) //how tall the bars are
 };      
