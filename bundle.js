@@ -105,8 +105,8 @@ const createBar = (width, height) => {
       .attr('height', height)
 
   bar.append('g')
-    .classed('x-axis', true);
-
+    .classed('x-axis', true)
+ 
   bar.append('g')
     .classed('y-axis', true);
 
@@ -132,90 +132,120 @@ const highlightBars = (year) => {
       .attr('fill', d => d.year === year ? '#16a085' : '#1abc9c');
 };
 
-const drawBar = (data, year, dataType) => {
-  let bar = d3.select('#bar')
-  let padding = {
+const drawBar = (data, currentYear, currentPos, currentStat) => {
+  let bar = d3.select('#bar');
+  let margin = {
     top: 30,
     right: 30,
     bottom: 30,
-    left: 110
+    left: 10
   };
-
   let barPadding = 1;
-  let width = +bar.attr('width');
-  let height = +bar.attr('height');
-  let playerData = 
-    data.filter(d => d.POS === dataType)
-        .sort((a, b) => a.Year - b.Year);
-  
-  let xScale = 
-    d3.scaleLinear()
-      .domain(d3.extent(data, d => d.Player))
-      .range([padding.left, width - padding.right]);
+  let width = +bar.attr("width");
+  let height = +bar.attr("height");
+  let innerWidth = width - margin.left - margin.right;
+  let innerHeight = height - margin.top - margin.bottom;
 
+  // const g = bar.append('g')
+  //   .attr('transform', `translate(20, 20)`);
+    // .attr('transform', `translate(${margin.left}, ${margin.right})`);
+
+  //posData organized by Year
+  let posData = 
+    data.filter(d => d.POS === currentPos)
+      .sort((a, b) => a.Year - b.Year)
+  
+  //players organized by stat, decreasing - increasing
+  let players = 
+    posData.sort((a, b) => b[currentStat] - a[currentStat])
+      .slice(0, 20);
+  
+
+  let xScale = 
+    d3.scaleBand()
+      .domain(players.map(d => d.Player))
+      .range([0, width])
+      .padding(0.1)
+
+  //when we append rect, we need to set range and height to x and yscales
   let yScale = 
     d3.scaleLinear()
-      .domain([0, d3.max(playerData, d => d[dataType])])
-      .range([height - padding.bottom, padding.top]);
+      .domain([0, d3.max(players, d => d[currentStat])])
+      .range([innerHeight, 0]);
 
-  let barWidth = xScale(xScale.domain()[0] + 1) - xScale.range()[0];
+  let barWidth = yScale(yScale.domain()[0] + 1) - yScale.range()[0];
 
-  let xAxis = 
-    d3.axisBottom(xScale)
-      .tickFormat(d3.format('.0f'));
-
-  d3.select('.x-axis')
-    .attr('transform', "translate(0, " + (height - padding.bottom) + ")")
-    .call(xAxis);
+  let xAxis = d3.axisBottom(xScale)
 
   let yAxis = d3.axisLeft(yScale);
 
+  // g.append('g').call(yAxis)
   d3.select('.y-axis')
-    .attr('transform', "translate(" + (padding.left - barWidth / 2) + ",0)")
+    .attr('transform', `translate(${margin.left}, 0)`)
     .transition()
     .duration(1000)
     .call(yAxis);
 
-  //these should be stats
-  let axisLabel = dataType === "PG" ? "Point Guard, stats per year" : dataType === "SG" ? "Shooting Guard, stats per year" : dataType === "SF" ? "Small Forward, stats per year" : dataType === "PF" ? "Power Foward, stats per year" : "Center, stats per year";
+  // g.append('g').call(xAxis)
+  d3.select('.x-axis')
+    .attr('transform', `translate(0, ${innerHeight - margin.top})`)
+    .transition()
+    .duration(1000)
+    .call(xAxis)
+    .selectAll('text')
+    .style('text-anchor', 'end')
+    .attr("transform", "rotate(-90)")
 
-  let barTitle = dataType ? "Stats for, " + dataType : "Click on a position to see annual trends.";
-    
-  d3.select('.y-axis-label')
-    .text('axisLabel');
-  
-  d3.select('.bar-title')
-    .text(barTitle)
+  let axisLabel = currentStat === 
+    "AST" ? `${currentStat} for year ${currentYear}` :
+    currentStat === "REB" ? `${currentStat} for year ${currentYear}` :
+    currentStat === "STL" ? `${currentStat} for year ${currentYear}` :
+    currentStat === "BLK" ? `${currentStat} for year ${currentYear}` : 
+    currentStat === "PTS" ? `${currentStat} for year ${currentYear}` :
+    currentStat === "FG" ? `${currentStat} for year ${currentYear}` :
+    currentStat === "FT" ? `${currentStat} for year ${currentYear}` :
+    currentStat === "ThreePointers" ? `${currentStat} for year ${currentYear}` : 
+    `TOV for year ${currentYear}`;
+ 
+  let barTitle = currentPos ? `${currentPos} stats for ${currentYear}` : `please select a year to see annual trends`;
+
+  d3.select(".y-axis-label")
+    .text(axisLabel);
+
+  d3.select(".bar-title")
+    .text(barTitle);
 
   let t = 
     d3.transition()
       .duration(1000)
       .ease(d3.easeBounceOut);
 
-  let update = bar.selectAll('.bar').data(playerData);
-
+  let update = 
+    bar.selectAll('.bar')
+       .data(players)
+  
   update
     .exit()
     .transition(t)
       .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
-      .attr('y', height - padding.bottom)
+      .attr('y', height - margin.bottom)
       .attr('height', 0)
-      .remove()
+      .remove();
 
   update
     .enter()
     .append('rect')
       .classed('bar', true)
-      .attr('y', height - padding.bottom)
-      .attr('height', 0)
+      .attr('y', height) //how far the bar is from the top of graph
+      .attr('height', 0) //where it starts
     .merge(update)
-      .attr('x', d => (xScale(d.Player) + xScale(d.player - 1)) / 2)
-      .attr('width', barWidth - barPadding)
+      .attr('x', d => xScale(d.Player)) //how this is spread across the graph
+      .attr('width', d => xScale.bandwidth()) //how wide the bars are
       .transition(t)
       .delay((d, i) => i * 100)
-        .attr('y', d => yScale(d[dataType]))
-        .attr('height', d => height - padding.bottom - yScale(d[dataType]))
-}
+        .attr('y', d => yScale(d[currentStat])) //distance between bar and top of graph
+        .attr('height', d => height - yScale(d[currentStat]) - margin.bottom) //how tall the bars are
+};      
 
 /***/ }),
 
@@ -248,26 +278,32 @@ d3.queue()
       FT: +row.FT,
       Year: +row.Year,
       POS: row.Pos,
-      Player: row.Player
+      Player: row.Player,
+      G: +row.G
     };
   })
   .await((error, data) => {
     if (error) throw error;
     let years = d3.extent(data.map(d => d.Year));
     let currentYear = years[0];
-    let currentDataType = 
-      d3.select('input[name="data-type"]:checked')
+    let currentPos = 
+      d3.select('input[name="pos-type"]:checked')
+        .attr('value');
+
+    let currentStat = 
+      d3.select('input[name="stat-type"]:checked')
         .attr('value');
 
     let width = 
       +d3.select(".chart-container")
         .node().offsetWidth;
 
-    let height = 600;
+    let pieHeight = 500;
+    let height = 500;
     
-    Object(_pie__WEBPACK_IMPORTED_MODULE_0__["createPie"])(width, height);
+    Object(_pie__WEBPACK_IMPORTED_MODULE_0__["createPie"])(width, pieHeight);
     Object(_bar__WEBPACK_IMPORTED_MODULE_1__["createBar"])(width, height);
-    Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentDataType);
+    Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat);
     Object(_pie__WEBPACK_IMPORTED_MODULE_0__["drawPie"])(data, currentYear);
 
     //range input
@@ -279,19 +315,29 @@ d3.queue()
       .on('input', () => {
         currentYear = +d3.event.target.value;
         Object(_pie__WEBPACK_IMPORTED_MODULE_0__["drawPie"])(data, currentYear);
-        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentDataType);
+        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat);
         highlightBars(currentYear);
       });
     
     //event listener for radio button
     //on change, grab new data type and redraw
-    d3.selectAll('input[name="data-type"]')
-      .on('change', () => {
+    d3.selectAll('input[name="pos-type"]')
+      .on("change", () => {
         let active = d3.select('.active').data()[0];
-        currentDataType = d3.event.target.value;
-        let pos = active ? active.properties.pos : '';
-        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentDataType);
+        let pos = active ? active.properties.POS : "";
+        currentPos = d3.event.target.value;
+        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat)
       });
+
+    d3.selectAll('input[name="stat-type"]')
+      .on("change", () => {
+        let active = d3.select('.active').data()[0];
+        currentStat = d3.event.target.value;
+        let stat = active ? active.properties[currentStat] : "";
+        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat);
+      });
+
+
   });
 
 /***/ }),

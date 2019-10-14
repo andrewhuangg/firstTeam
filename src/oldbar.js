@@ -34,67 +34,60 @@ export const highlightBars = (year) => {
 
 export const drawBar = (data, currentYear, currentPos, currentStat) => {
   let bar = d3.select('#bar');
-  let margin = {
+  let padding = {
     top: 30,
     right: 30,
     bottom: 30,
-    left: 10
+    left: 110
   };
   let barPadding = 1;
   let width = +bar.attr("width");
   let height = +bar.attr("height");
-  let innerWidth = width - margin.left - margin.right;
-  let innerHeight = height - margin.top - margin.bottom;
+  let statData = 
+    data.filter(d => d[currentStat])
+        .sort((a, b) => a.currentYear - b.currentYear);
 
-  // const g = bar.append('g')
-  //   .attr('transform', `translate(20, 20)`);
-    // .attr('transform', `translate(${margin.left}, ${margin.right})`);
+  // let xScale = 
+  //   d3.scaleLinear()
+  //     .domain(d3.extent(data
+  //       .sort((a, b) => a[currentStat] - b[currentStat])
+  //       .filter(d => d.G >= 40)
+  //       .slice(0, 40)
+  //       .map(d => d.Player)
+  //       ))
+  //     .range([padding.left, width - padding.right]);
 
-  //posData organized by Year
-  let posData = 
-    data.filter(d => d.POS === currentPos)
-      .sort((a, b) => a.Year - b.Year)
-  
-  //players organized by stat, decreasing - increasing
-  let players = 
-    posData.sort((a, b) => b[currentStat] - a[currentStat])
-      .slice(0, 20);
-  
+  let top40 = data.sort((a, b) => a[currentStat] - b[currentStat])
+    .filter(d => d.G >= 40)
+    .slice(0, 40);
 
-  let xScale = 
-    d3.scaleBand()
-      .domain(players.map(d => d.Player))
-      .range([0, width])
-      .padding(0.1)
-
-  //when we append rect, we need to set range and height to x and yscales
+  let xScale =
+    d3.scaleLinear()
+      .domain(d3.extent(top40, d => d.Year))
+      .range([padding.left, width - padding.right]);
+    
   let yScale = 
     d3.scaleLinear()
-      .domain([0, d3.max(players, d => d[currentStat])])
-      .range([innerHeight, 0]);
+      .domain([0, d3.max(statData, d => d[`${currentStat}`])])
+      .range([height - padding.bottom, padding.top]);
 
-  let barWidth = yScale(yScale.domain()[0] + 1) - yScale.range()[0];
+  let barWidth = xScale(xScale.domain()[0] + 1) - xScale.range()[0];
 
-  let xAxis = d3.axisBottom(xScale)
+  let xAxis = 
+    d3.axisBottom(xScale)
+      .tickFormat(d3.format('.0f'));
+
+
+  d3.select('.x-axis')
+    .attr('transform', "translate(0, " + (height - padding.bottom) + ")")
+    .call(xAxis);
 
   let yAxis = d3.axisLeft(yScale);
-
-  // g.append('g').call(yAxis)
   d3.select('.y-axis')
-    .attr('transform', `translate(${margin.left}, 0)`)
+    .attr('transform', "translate(" + (padding.left - barWidth / 2) + ",0)")
     .transition()
     .duration(1000)
     .call(yAxis);
-
-  // g.append('g').call(xAxis)
-  d3.select('.x-axis')
-    .attr('transform', `translate(0, ${innerHeight - margin.top})`)
-    .transition()
-    .duration(1000)
-    .call(xAxis)
-    .selectAll('text')
-    .style('text-anchor', 'end')
-    .attr("transform", "rotate(-90)")
 
   let axisLabel = currentStat === 
     "AST" ? `${currentStat} for year ${currentYear}` :
@@ -106,13 +99,13 @@ export const drawBar = (data, currentYear, currentPos, currentStat) => {
     currentStat === "FT" ? `${currentStat} for year ${currentYear}` :
     currentStat === "ThreePointers" ? `${currentStat} for year ${currentYear}` : 
     `TOV for year ${currentYear}`;
- 
+
   let barTitle = currentPos ? `${currentPos} stats for ${currentYear}` : `please select a year to see annual trends`;
 
-  d3.select(".y-axis-label")
+  d3.select('.y-axis-label')
     .text(axisLabel);
 
-  d3.select(".bar-title")
+  d3.select('.bar-title')
     .text(barTitle);
 
   let t = 
@@ -120,29 +113,30 @@ export const drawBar = (data, currentYear, currentPos, currentStat) => {
       .duration(1000)
       .ease(d3.easeBounceOut);
 
+
   let update = 
-    bar.selectAll('.bar')
-       .data(players)
+    bar.selectAll('bar')
+       .data(statData);
   
   update
     .exit()
     .transition(t)
       .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
-      .attr('y', height - margin.bottom)
+      .attr('y', height - padding.bottom)
       .attr('height', 0)
       .remove();
-
+  
   update
     .enter()
-    .append('rect')
-      .classed('bar', true)
-      .attr('y', height) //how far the bar is from the top of graph
-      .attr('height', 0) //where it starts
+    .append("rect")
+      .classed("bar", true)
+      .attr("y", height - padding.bottom)
+      .attr("height", 0)
     .merge(update)
-      .attr('x', d => xScale(d.Player)) //how this is spread across the graph
-      .attr('width', d => xScale.bandwidth()) //how wide the bars are
+      .attr("x", d => (xScale(d.Year) + xScale(d.Year - 1)) / 2)
+      .attr("width", barWidth - barPadding)
       .transition(t)
       .delay((d, i) => i * 100)
-        .attr('y', d => yScale(d[currentStat])) //distance between bar and top of graph
-        .attr('height', d => height - yScale(d[currentStat]) - margin.bottom) //how tall the bars are
-};      
+        .attr("y", d => yScale(d[currentStat]))
+        .attr("height", d => height - padding.bottom - yScale(d[currentStat]));
+};

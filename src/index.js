@@ -16,26 +16,32 @@ d3.queue()
       FT: +row.FT,
       Year: +row.Year,
       POS: row.Pos,
-      Player: row.Player
+      Player: row.Player,
+      G: +row.G
     };
   })
   .await((error, data) => {
     if (error) throw error;
     let years = d3.extent(data.map(d => d.Year));
     let currentYear = years[0];
-    let currentDataType = 
-      d3.select('input[name="data-type"]:checked')
+    let currentPos = 
+      d3.select('input[name="pos-type"]:checked')
+        .attr('value');
+
+    let currentStat = 
+      d3.select('input[name="stat-type"]:checked')
         .attr('value');
 
     let width = 
       +d3.select(".chart-container")
         .node().offsetWidth;
 
-    let height = 600;
+    let pieHeight = 500;
+    let height = 500;
     
-    createPie(width, height);
+    createPie(width, pieHeight);
     createBar(width, height);
-    drawBar(data, currentYear, currentDataType);
+    drawBar(data, currentYear, currentPos, currentStat);
     drawPie(data, currentYear);
 
     //range input
@@ -47,17 +53,27 @@ d3.queue()
       .on('input', () => {
         currentYear = +d3.event.target.value;
         drawPie(data, currentYear);
-        drawBar(data, currentYear, currentDataType);
+        drawBar(data, currentYear, currentPos, currentStat);
         highlightBars(currentYear);
       });
     
     //event listener for radio button
     //on change, grab new data type and redraw
-    d3.selectAll('input[name="data-type"]')
-      .on('change', () => {
+    d3.selectAll('input[name="pos-type"]')
+      .on("change", () => {
         let active = d3.select('.active').data()[0];
-        currentDataType = d3.event.target.value;
-        let pos = active ? active.properties.pos : '';
-        drawBar(data, currentYear, currentDataType);
+        let pos = active ? active.properties.POS : "";
+        currentPos = d3.event.target.value;
+        drawBar(data, currentYear, currentPos, currentStat)
       });
+
+    d3.selectAll('input[name="stat-type"]')
+      .on("change", () => {
+        let active = d3.select('.active').data()[0];
+        currentStat = d3.event.target.value;
+        let stat = active ? active.properties[currentStat] : "";
+        drawBar(data, currentYear, currentPos, currentStat);
+      });
+
+
   });
