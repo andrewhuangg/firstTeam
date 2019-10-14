@@ -14,12 +14,13 @@ d3.queue()
       ThreePointers: +row.ThreePointers,
       FG: +row.FG,
       FT: +row.FT,
-      Year: +row.Year
+      Year: +row.Year,
+      POS: row.Pos,
+      Player: row.Player
     };
   })
   .await((error, data) => {
     if (error) throw error;
-    
     let years = d3.extent(data.map(d => d.Year));
     let currentYear = years[0];
     let currentDataType = 
@@ -33,8 +34,8 @@ d3.queue()
     let height = 600;
     
     createPie(width, height);
-    // createBar(width, height);
-    // drawBar(data, currentYear, currentDataType);
+    createBar(width, height);
+    drawBar(data, currentYear, currentDataType);
     drawPie(data, currentYear);
 
     //range input
@@ -46,15 +47,17 @@ d3.queue()
       .on('input', () => {
         currentYear = +d3.event.target.value;
         drawPie(data, currentYear);
-        // drawBar(data, currentYear, currentDataType);
-        // highlightBars(currentYear);
+        drawBar(data, currentYear, currentDataType);
+        highlightBars(currentYear);
       });
     
     //event listener for radio button
     //on change, grab new data type and redraw
     d3.selectAll('input[name="data-type"]')
       .on('change', () => {
+        let active = d3.select('.active').data()[0];
         currentDataType = d3.event.target.value;
-        // drawBar(data, currentYear, currentDataType);
+        let pos = active ? active.properties.pos : '';
+        drawBar(data, currentYear, currentDataType);
       });
   });

@@ -90,10 +90,132 @@
 /*!********************!*\
   !*** ./src/bar.js ***!
   \********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: createBar, highlightBars, drawBar */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createBar", function() { return createBar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "highlightBars", function() { return highlightBars; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawBar", function() { return drawBar; });
+const createBar = (width, height) => {
+  let bar = 
+    d3.select('#bar')
+      .attr('width', width)
+      .attr('height', height)
 
+  bar.append('g')
+    .classed('x-axis', true);
+
+  bar.append('g')
+    .classed('y-axis', true);
+
+  bar.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('x', - height / 2)
+    .attr('dy', '1em')
+    .style('text-anchor', 'middle')
+    .style('font-size', '1em')
+    .classed('y-axis-label', true);
+
+  bar.append('text')
+    .attr('x', width / 2)
+    .attr('y', '1em')
+    .attr('font-size', '1.5em')
+    .style('text-anchor', 'middle')
+    .classed('bar-title', true);
+};
+
+const highlightBars = (year) => {
+  d3.select('#bar')
+    .selectAll('rect')
+      .attr('fill', d => d.year === year ? '#16a085' : '#1abc9c');
+};
+
+const drawBar = (data, year, dataType) => {
+  let bar = d3.select('#bar')
+  let padding = {
+    top: 30,
+    right: 30,
+    bottom: 30,
+    left: 110
+  };
+
+  let barPadding = 1;
+  let width = +bar.attr('width');
+  let height = +bar.attr('height');
+  let playerData = 
+    data.filter(d => d.POS === dataType)
+        .sort((a, b) => a.Year - b.Year);
+  
+  let xScale = 
+    d3.scaleLinear()
+      .domain(d3.extent(data, d => d.Player))
+      .range([padding.left, width - padding.right]);
+
+  let yScale = 
+    d3.scaleLinear()
+      .domain([0, d3.max(playerData, d => d[dataType])])
+      .range([height - padding.bottom, padding.top]);
+
+  let barWidth = xScale(xScale.domain()[0] + 1) - xScale.range()[0];
+
+  let xAxis = 
+    d3.axisBottom(xScale)
+      .tickFormat(d3.format('.0f'));
+
+  d3.select('.x-axis')
+    .attr('transform', "translate(0, " + (height - padding.bottom) + ")")
+    .call(xAxis);
+
+  let yAxis = d3.axisLeft(yScale);
+
+  d3.select('.y-axis')
+    .attr('transform', "translate(" + (padding.left - barWidth / 2) + ",0)")
+    .transition()
+    .duration(1000)
+    .call(yAxis);
+
+  //these should be stats
+  let axisLabel = dataType === "PG" ? "Point Guard, stats per year" : dataType === "SG" ? "Shooting Guard, stats per year" : dataType === "SF" ? "Small Forward, stats per year" : dataType === "PF" ? "Power Foward, stats per year" : "Center, stats per year";
+
+  let barTitle = dataType ? "Stats for, " + dataType : "Click on a position to see annual trends.";
+    
+  d3.select('.y-axis-label')
+    .text('axisLabel');
+  
+  d3.select('.bar-title')
+    .text(barTitle)
+
+  let t = 
+    d3.transition()
+      .duration(1000)
+      .ease(d3.easeBounceOut);
+
+  let update = bar.selectAll('.bar').data(playerData);
+
+  update
+    .exit()
+    .transition(t)
+      .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
+      .attr('y', height - padding.bottom)
+      .attr('height', 0)
+      .remove()
+
+  update
+    .enter()
+    .append('rect')
+      .classed('bar', true)
+      .attr('y', height - padding.bottom)
+      .attr('height', 0)
+    .merge(update)
+      .attr('x', d => (xScale(d.Player) + xScale(d.player - 1)) / 2)
+      .attr('width', barWidth - barPadding)
+      .transition(t)
+      .delay((d, i) => i * 100)
+        .attr('y', d => yScale(d[dataType]))
+        .attr('height', d => height - padding.bottom - yScale(d[dataType]))
+}
 
 /***/ }),
 
@@ -108,7 +230,6 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./pie */ "./src/pie.js");
 /* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
-/* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_bar__WEBPACK_IMPORTED_MODULE_1__);
 
 
 
@@ -125,12 +246,13 @@ d3.queue()
       ThreePointers: +row.ThreePointers,
       FG: +row.FG,
       FT: +row.FT,
-      Year: +row.Year
+      Year: +row.Year,
+      POS: row.Pos,
+      Player: row.Player
     };
   })
   .await((error, data) => {
     if (error) throw error;
-    
     let years = d3.extent(data.map(d => d.Year));
     let currentYear = years[0];
     let currentDataType = 
@@ -144,8 +266,8 @@ d3.queue()
     let height = 600;
     
     Object(_pie__WEBPACK_IMPORTED_MODULE_0__["createPie"])(width, height);
-    // createBar(width, height);
-    // drawBar(data, currentYear, currentDataType);
+    Object(_bar__WEBPACK_IMPORTED_MODULE_1__["createBar"])(width, height);
+    Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentDataType);
     Object(_pie__WEBPACK_IMPORTED_MODULE_0__["drawPie"])(data, currentYear);
 
     //range input
@@ -157,16 +279,18 @@ d3.queue()
       .on('input', () => {
         currentYear = +d3.event.target.value;
         Object(_pie__WEBPACK_IMPORTED_MODULE_0__["drawPie"])(data, currentYear);
-        // drawBar(data, currentYear, currentDataType);
-        // highlightBars(currentYear);
+        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentDataType);
+        highlightBars(currentYear);
       });
     
     //event listener for radio button
     //on change, grab new data type and redraw
     d3.selectAll('input[name="data-type"]')
       .on('change', () => {
+        let active = d3.select('.active').data()[0];
         currentDataType = d3.event.target.value;
-        // drawBar(data, currentYear, currentDataType);
+        let pos = active ? active.properties.pos : '';
+        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentDataType);
       });
   });
 
@@ -205,7 +329,7 @@ const createPie = (width, height) => {
 const drawPie = (data, currentYear) => {
   let pie = d3.select('#pie');
 
-  let arcs = d3.pie().value(d => d.Year)
+  let arcs = d3.pie().value(d => d.PTS)
 
   let path = d3.arc()
     .outerRadius(+pie.attr('height') / 2 - 50)

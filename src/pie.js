@@ -20,7 +20,7 @@ export const createPie = (width, height) => {
 export const drawPie = (data, currentYear) => {
   let pie = d3.select('#pie');
 
-  let arcs = d3.pie().value(d => d.Year)
+  let arcs = d3.pie().value(d => d.PTS)
 
   let path = d3.arc()
     .outerRadius(+pie.attr('height') / 2 - 50)
