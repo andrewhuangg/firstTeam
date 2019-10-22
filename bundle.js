@@ -29228,175 +29228,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/bar.js":
-/*!********************!*\
-  !*** ./src/bar.js ***!
-  \********************/
-/*! exports provided: createBar, highlightBars, drawBar */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createBar", function() { return createBar; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "highlightBars", function() { return highlightBars; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawBar", function() { return drawBar; });
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-
-
-const createBar = (width, height) => {
-  let bar = 
-    d3.select('#bar')
-      .attr('width', width)
-      .attr('height', height)
-
-  bar.append('g')
-    .classed('x-axis', true)
- 
-  bar.append('g')
-    .classed('y-axis', true);
-
-  bar.append('text')
-    .attr('transform', 'rotate(-90)')
-    .attr('x', - height / 2)
-    .style('text-anchor', 'middle')
-    .style('font-size', '1em')
-    .classed('y-axis-label', true);
-
-  bar.append('text')
-    .attr('x', width / 2)
-    .attr('y', '1em')
-    .attr('font-size', '1.5em')
-    .style('text-anchor', 'middle')
-    .classed('bar-title', true);
-};
-
-const highlightBars = (year) => {
-  d3.select('#bar')
-    .selectAll('rect')
-      .attr('fill', d => d.year === year ? '#16a085' : '#1abc9c');
-};
-
-const drawBar = (data, currentYear, currentPos, currentStat) => {
-  let bar = d3.select('#bar');
-  let margin = {
-    top: 30,
-    right: 30,
-    bottom: 30,
-    left: 10 //10
-  };
-  let barPadding = 1;
-  let width = +bar.attr("width");
-  let height = +bar.attr("height");
-  let innerWidth = width - margin.left - margin.right;
-  let innerHeight = height - margin.top - margin.bottom;
-
-  // const g = bar.append('g')
-  //   .attr('transform', `translate(20, 20)`);
-    // .attr('transform', `translate(${margin.left}, ${margin.right})`);
-
-  //posData organized by Year
-  let posData = 
-    data.filter(d => d.POS === currentPos)
-      .sort((a, b) => a.Year - b.Year)
-  
-  //players organized by stat, decreasing - increasing
-  let players = 
-    posData.sort((a, b) => b[currentStat] - a[currentStat])
-      .slice(0, 20);
-  
-
-  let xScale = 
-    d3.scaleBand()
-      .domain(players.map(d => d.Player))
-      .range([0, innerWidth])
-      // .range([margin.left, width - margin.right])
-      // .padding(0.1)
-      // .range([0, width])
-      // .padding(0.1)
-
-  //when we append rect, we need to set range and height to x and yscales
-  let yScale = 
-    d3.scaleLinear()
-      .domain([0, d3.max(players, d => d[currentStat])])
-      .range([innerHeight, 0])
-      .nice()
-
-  let barWidth = yScale(yScale.domain()[0] + 1) - yScale.range()[0];
-
-  let xAxis = d3.axisBottom(xScale)
-
-  let yAxis = d3.axisLeft(yScale);
-
-  // g.append('g').call(yAxis)
-  d3.select('.y-axis')
-    .attr('transform', `translate(30, 0)`)
-    .transition()
-    .duration(1000)
-    .call(yAxis);
-
-  // g.append('g').call(xAxis)
-  d3.select('.x-axis')
-    .attr('transform', `translate(0, ${innerHeight})`)
-    .transition()
-    .duration(1000)
-    .call(xAxis)
-    .selectAll('text')
-    .style('text-anchor', 'end')
-    .attr("transform", "rotate(-90)")
-
-  let axisLabel = currentStat === 
-    "AST" ? `${currentStat} for year ${currentYear}` :
-    currentStat === "REB" ? `${currentStat} for year ${currentYear}` :
-    currentStat === "STL" ? `${currentStat} for year ${currentYear}` :
-    currentStat === "BLK" ? `${currentStat} for year ${currentYear}` : 
-    currentStat === "PTS" ? `${currentStat} for year ${currentYear}` :
-    currentStat === "FG" ? `${currentStat} for year ${currentYear}` :
-    currentStat === "FT" ? `${currentStat} for year ${currentYear}` :
-    currentStat === "ThreePointers" ? `${currentStat} for year ${currentYear}` : 
-    `TOV for year ${currentYear}`;
- 
-  let barTitle = currentPos ? `${currentPos} stats for ${currentYear}` : `please select a year to see annual trends`;
-
-  d3.select(".y-axis-label")
-    .text(axisLabel);
-
-  d3.select(".bar-title")
-    .text(barTitle);
-
-  let t = 
-    d3.transition()
-      .duration(1000)
-      .ease(d3.easeBounceOut);
-
-  let update = 
-    bar.selectAll('.bar')
-       .data(players)
-  
-  update
-    .exit()
-    .transition(t)
-      .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
-      .attr('y', height - margin.bottom)
-      .attr('height', 0)
-      .remove();
-
-  update
-    .enter()
-    .append('rect')
-      .classed('bar', true)
-      .attr('y', height) //how far the bar is from the top of graph
-      .attr('height', 0) //where it starts
-    .merge(update)
-      .attr('x', d => xScale(d.Player) + 25) //how this is spread across the graph
-      .attr('width', d => xScale.bandwidth() / 2) //how wide the bars are
-      .transition(t)
-      .delay((d, i) => i * 100)
-        .attr('y', d => yScale(d[currentStat]) - 60) //distance between bar and top of graph
-        .attr('height', d => height - yScale(d[currentStat]))//- margin.bottom)//- 90) //how tall the bars are
-};      
-
-/***/ }),
-
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -29406,163 +29237,134 @@ const drawBar = (data, currentYear, currentPos, currentStat) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _pie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./pie */ "./src/pie.js");
-/* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
+//selecting svg on html
+const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('svg');
 
+const width = +svg.attr('width');
+const height = +svg.attr('height');
 
-d3.queue()
-  .defer(d3.csv,'../data/NBA_PPG_CSV_Master_2017_2019.csv', (row) => {
-    return {
-      TM: row.Tm,
-      AST: +row.AST,
-      TRB: +row.TRB,
-      BLK: +row.BLK,
-      STL: +row.STL,
-      PTS: +row.PTS,
-      TOV: +row.TOV,
-      ThreePointers: +row.ThreePointers,
-      FG: +row.FG,
-      FT: +row.FT,
-      Year: +row.Year,
-      POS: row.Pos,
-      Player: row.Player,
-      G: +row.G
-    };
-  })
-  .await((error, data) => {
-    if (error) throw error;
-    let years = d3.extent(data.map(d => d.Year));
-    let currentYear = years[0];
-    let currentPos = 
-      d3.select('input[name="pos-type"]:checked')
-        .attr('value');
-
-    let currentStat = 
-      d3.select('input[name="stat-type"]:checked')
-        .attr('value');
-
-    let pieWidth = 700;
-    let width = 600;
-    let pieHeight = 500;
-    let height = 500;
-    
-    Object(_pie__WEBPACK_IMPORTED_MODULE_0__["createPie"])(pieWidth, pieHeight);
-    Object(_bar__WEBPACK_IMPORTED_MODULE_1__["createBar"])(width, height);
-    Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat);
-    Object(_pie__WEBPACK_IMPORTED_MODULE_0__["drawPie"])(data, currentYear);
-
-    //range input
-    //when value changes, grab new current year and redraw graph
-    d3.select('#year')
-      .property('min', currentYear)
-      .property('max', years[1])
-      .property('value', currentYear)
-      .on('input', () => {
-        currentYear = +d3.event.target.value;
-        Object(_pie__WEBPACK_IMPORTED_MODULE_0__["drawPie"])(data, currentYear);
-        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat);
-        highlightBars(currentYear);
-      });
-    
-    //event listener for radio button
-    //on change, grab new data type and redraw
-    d3.selectAll('input[name="pos-type"]')
-      .on("change", () => {
-        let active = d3.select('.active').data()[0];
-        let pos = active ? active.properties.POS : "";
-        currentPos = d3.event.target.value;
-        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat)
-      });
-
-    d3.selectAll('input[name="stat-type"]')
-      .on("change", () => {
-        let active = d3.select('.active').data()[0];
-        currentStat = d3.event.target.value;
-        let stat = active ? active.properties[currentStat] : "";
-        Object(_bar__WEBPACK_IMPORTED_MODULE_1__["drawBar"])(data, currentYear, currentPos, currentStat);
-      });
-
-
+//loading data set
+Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/NBA_PPG_CSV_Master_2017_2019.csv').then(data => {
+  //top 20 of each position (pg, sg, sf, pf, c)
+  data.forEach(d => {
+    d.Year = +d.Year;
+    d.PTS = +d.PTS;
+    d.AST = +d.AST;
+    d.BLK = +d.BLK;
+    d.STL = +d.STL;
+    d.TRB = +d.TRB;
+    d.ThreePointers = +d.ThreePointers;
+    d.FGpct = +d.FGpct;
+    d.FTpct = +d.FTpct;
+    d.G = +d.G;
+    d.GS = +d.GS;
   });
 
-/***/ }),
+  let pgData = data
+    .filter(player => player.Pos === 'PG' && player.Year === 2019 && player.GS > 30)
+    .sort((a, b) => {
+      if (a.PTS >= b.PTS) return -1;
+      if (a.PTS < b.PTS) return 1;
+      if (a.AST >= b.AST) return -1;
+      if (a.AST < b.AST) return 1;
+      if (a.ThreePointers >= b.ThreePointers) return -1;
+      if (a.ThreePointers < b.ThreePointers) return 1;
+      if (a.STL >= b.STL) return -1;
+      if (a.STL < b.STL) return 1;
+      if (a.TRB >= b.TRB) return -1;
+      if (a.TRB < b.TRB) return 1;
+    })
+    .slice(0, 20);
 
-/***/ "./src/pie.js":
-/*!********************!*\
-  !*** ./src/pie.js ***!
-  \********************/
-/*! exports provided: createPie, drawPie */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+  let sgData = data
+    .filter(player => player.Pos === 'SG' && player.Year === 2019 && player.GS > 30)
+    .sort((a, b) => {
+      if (a.PTS >= b.PTS) return -1;
+      if (a.PTS < b.PTS) return 1;
+      if (a.ThreePointers < b.ThreePointers) return 1;
+      if (a.ThreePointers >= b.ThreePointers) return -1;
+      if (a.AST >= b.AST) return -1;
+      if (a.AST < b.AST) return 1;
+      if (a.STL >= b.STL) return -1;
+      if (a.STL < b.STL) return 1;
+      if (a.TRB >= b.TRB) return -1;
+      if (a.TRB < b.TRB) return 1;
+    })
+    .slice(0, 20);
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createPie", function() { return createPie; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawPie", function() { return drawPie; });
-const createPie = (width, height) => {
-  let pie = 
-    d3.select('#pie')
-      .attr('width', width)
-      .attr('height', height);
 
-  pie.append('g')
-    .attr('transform', "translate(" + width / 2 + ", " + (height / 2 + 10) + ")")
-    .classed('chart', true);
+  let sfData = data
+    .filter(player => player.Pos === 'SF' && player.Year === 2019 && player.GS > 30)
+    .sort((a, b) => {
+      if (a.PTS >= b.PTS) return -1;
+      if (a.PTS < b.PTS) return 1;
+      if (a.TRB >= b.TRB) return -1;
+      if (a.TRB < b.TRB) return 1;
+      if (a.BLK >= b.BLK) return -1;
+      if (a.BLK < b.BLK) return 1;
+      if (a.ThreePointers >= b.ThreePointers) return -1;
+      if (a.ThreePointers < b.ThreePointers) return 1;
+      if (a.STL >= b.STL) return -1;
+      if (a.STL < b.STL) return 1;
+      if (a.AST >= b.AST) return -1;
+      if (a.AST < b.AST) return 1;
+    })
+    .slice(0, 20);
 
-  pie.append('text')
-    .attr('x', width / 2)
-    .attr('y', '1em')
-    .attr('font-size', '1.5em')
-    .style('text-anchor', 'middle')
-    .classed('pie-title', true);
 
-};
+  let pfData = data
+    .filter(player => player.Pos === 'PF' && player.Year === 2019 && player.GS > 30)
+    .sort((a, b) => {
+      if (a.PTS >= b.PTS) return -1;
+      if (a.PTS < b.PTS) return 1;
+      if (a.TRB >= b.TRB) return -1;
+      if (a.TRB < b.TRB) return 1;
+      if (a.FTpct >= b.FTpct) return -1;
+      if (a.FTpct < b.FTpct) return 1;
+      if (a.FGpct >= b.FGpct) return -1;
+      if (a.FGpct < b.FGpct) return 1;
+      if (a.BLK >= b.BLK) return -1;
+      if (a.BLK < b.BLK) return 1;
+      if (a.STL >= b.STL) return -1;
+      if (a.STL < b.STL) return 1;
+      if (a.ThreePointers >= b.ThreePointers) return -1;
+      if (a.ThreePointers < b.ThreePointers) return 1;
+      if (a.AST >= b.AST) return -1;
+      if (a.AST < b.AST) return 1;
+    })
+    .slice(0, 20);
 
-const drawPie = (data, currentYear) => {
-  let pie = d3.select('#pie');
+  let cData = data
+    .filter(player => player.Pos === 'C' && player.Year === 2019 && player.GS > 30)
+    .sort((a, b) => {
+      if (a.PTS >= b.PTS) return -1;
+      if (a.PTS < b.PTS) return 1;
+      if (a.TRB >= b.TRB) return -1;
+      if (a.TRB < b.TRB) return 1;
+      if (a.FTpct >= b.FTpct) return -1;
+      if (a.FTpct < b.FTpct) return 1;
+      if (a.FGpct >= b.FGpct) return -1;
+      if (a.FGpct < b.FGpct) return 1;
+      if (a.BLK >= b.BLK) return -1;
+      if (a.BLK < b.BLK) return 1;
+      if (a.STL >= b.STL) return -1;
+      if (a.STL < b.STL) return 1;
+      if (a.AST >= b.AST) return -1;
+      if (a.AST < b.AST) return 1;
+    })
+    .slice(0, 20);
 
-  let arcs = d3.pie().value(d => d.PTS)
 
-  let path = d3.arc()
-    .outerRadius(+pie.attr('height') / 2 - 50)
-    .innerRadius(0);
+    console.log('point guards', pgData)
+    console.log('shooting guards', sgData)
+    console.log('small', sfData)
+    console.log('power', pfData)
+    console.log('center', cData)
 
-  let yearData = data.filter(d => d.Year === currentYear);
-  let teams = [];
+});
 
-  for (let i = 0; i < yearData.length; i++) {
-    let team = yearData[i].TM;
-    if (!teams.includes(team)) {
-      teams.push(team);
-    }
-  }
-
-  let colorScale = d3.scaleOrdinal()
-    .domain(teams)
-    .range(['#4b47bc', '#7e57c2', '26a69a', '#42a5f5', '#78909c']);
-
-  let update = 
-    pie.select('.chart')
-      .selectAll('.arc')
-      .data(arcs(yearData));
-
-  update
-    .exit()
-    .remove()
-
-  update
-    .enter()
-      .append('path')
-      .classed('arc', true)
-      .attr('stroke', '#dff1ff')
-      .attr('stroke-width', '0.25px')
-    .merge(update)
-      .attr('fill', d => colorScale(d.data.Tm))
-      .attr('d', path);
-
-  pie.select('.pie-title')
-    .text('Team Stat Leaders by Team, ' + currentYear);
-};
 
 /***/ })
 
