@@ -29238,133 +29238,240 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
+/* harmony import */ var _newBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./newBar */ "./src/newBar.js");
+
+
 
 //selecting svg on html
-const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('svg');
+const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
 
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-//loading data set
-Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/NBA_PPG_CSV_Master_2017_2019.csv').then(data => {
-  //top 20 of each position (pg, sg, sf, pf, c)
-  data.forEach(d => {
-    d.Year = +d.Year;
-    d.PTS = +d.PTS;
-    d.AST = +d.AST;
-    d.BLK = +d.BLK;
-    d.STL = +d.STL;
-    d.TRB = +d.TRB;
-    d.ThreePointers = +d.ThreePointers;
-    d.FGpct = +d.FGpct;
-    d.FTpct = +d.FTpct;
-    d.G = +d.G;
-    d.GS = +d.GS;
-  });
 
-  let pgData = data
-    .filter(player => player.Pos === 'PG' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-    })
-    .slice(0, 20);
+//pass year from radio button to select avg stats for year
+Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
+  let yearsArr = [2017, 2018, 2019];
+  let currentYear = yearsArr[0];
+  let currentPos = d3.select('input[name="pos"]:checked').attr('value');
+  let currentStat = d3.select('input[name="stat"]:checked').attr('value');
+  
+  Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+  d3.select('#year')
+    .property('min', currentYear)
+    .property('max', yearsArr[2])
+    .property('value', currentYear)
+    .on('input', () => {
+      currentYear = +d3.event.target.value;
+      data = data.filter(d => d.Year === currentYear);
+      Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+    });
 
-  let sgData = data
-    .filter(player => player.Pos === 'SG' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-    })
-    .slice(0, 20);
+  // pass pos, stat, year data to drawbar function
+  // we might need to change data to only pass in data for certain positions // stats as well
+  d3.selectAll('input[name="pos"]')
+    .on("change", () => {
+      currentPos = d3.event.target.value;
+      data = data.filter(d => d.Pos === currentPos);
+      Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+    });
 
+  d3.selectAll('input[name="stat"]')
+    .on("change", () => {
+      currentStat = d3.event.target.value;
+      Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+    });
 
-  let sfData = data
-    .filter(player => player.Pos === 'SF' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-      if (a.BLK >= b.BLK) return -1;
-      if (a.BLK < b.BLK) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-    })
-    .slice(0, 20);
+})
+
+/***/ }),
+
+/***/ "./src/loadData.js":
+/*!*************************!*\
+  !*** ./src/loadData.js ***!
+  \*************************/
+/*! exports provided: loadData */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadData", function() { return loadData; });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
-  let pfData = data
-    .filter(player => player.Pos === 'PF' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-      if (a.FTpct >= b.FTpct) return -1;
-      if (a.FTpct < b.FTpct) return 1;
-      if (a.FGpct >= b.FGpct) return -1;
-      if (a.FGpct < b.FGpct) return 1;
-      if (a.BLK >= b.BLK) return -1;
-      if (a.BLK < b.BLK) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-    })
-    .slice(0, 20);
+//loading data set (AVGS PER YEAR)
+const loadData = () => 
+  Promise
+    .all([
+      Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/NBA_PPG_CSV_Master_2017_2019.csv')
+    ])
+    .then(([data]) => {
+    //top 20 of each position (pg, sg, sf, pf, c)
 
-  let cData = data
-    .filter(player => player.Pos === 'C' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-      if (a.FTpct >= b.FTpct) return -1;
-      if (a.FTpct < b.FTpct) return 1;
-      if (a.FGpct >= b.FGpct) return -1;
-      if (a.FGpct < b.FGpct) return 1;
-      if (a.BLK >= b.BLK) return -1;
-      if (a.BLK < b.BLK) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-    })
-    .slice(0, 20);
+      data.forEach(d => {
+        d.Year = +d.Year;
+        d.PTS = +d.PTS;
+        d.AST = +d.AST;
+        d.BLK = +d.BLK;
+        d.STL = +d.STL;
+        d.TRB = +d.TRB;
+        d.ThreePointers = +d.ThreePointers;
+        d.FGpct = +d.FGpct;
+        d.FTpct = +d.FTpct;
+        d.G = +d.G;
+        d.GS = +d.GS;
+      });
+
+      let pgData = data
+        .filter(player => player.Pos === 'PG' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+        })
+        .slice(0, 20);
+
+      let sgData = data
+        .filter(player => player.Pos === 'SG' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+        })
+        .slice(0, 20);
 
 
-    console.log('point guards', pgData)
-    console.log('shooting guards', sgData)
-    console.log('small', sfData)
-    console.log('power', pfData)
-    console.log('center', cData)
+      let sfData = data
+        .filter(player => player.Pos === 'SF' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+          if (a.BLK >= b.BLK) return -1;
+          if (a.BLK < b.BLK) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+        })
+        .slice(0, 20);
 
-});
 
+      let pfData = data
+        .filter(player => player.Pos === 'PF' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+          if (a.FTpct >= b.FTpct) return -1;
+          if (a.FTpct < b.FTpct) return 1;
+          if (a.FGpct >= b.FGpct) return -1;
+          if (a.FGpct < b.FGpct) return 1;
+          if (a.BLK >= b.BLK) return -1;
+          if (a.BLK < b.BLK) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+        })
+        .slice(0, 20);
+
+      let cData = data
+        .filter(player => player.Pos === 'C' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+          if (a.FTpct >= b.FTpct) return -1;
+          if (a.FTpct < b.FTpct) return 1;
+          if (a.FGpct >= b.FGpct) return -1;
+          if (a.FGpct < b.FGpct) return 1;
+          if (a.BLK >= b.BLK) return -1;
+          if (a.BLK < b.BLK) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+        })
+        .slice(0, 20);
+
+      //top 20 of every position
+      let newData = pgData.concat(sgData, sfData, pfData, cData);
+      return newData;
+    });
+
+/***/ }),
+
+/***/ "./src/newBar.js":
+/*!***********************!*\
+  !*** ./src/newBar.js ***!
+  \***********************/
+/*! exports provided: drawBar */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawBar", function() { return drawBar; });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+
+
+//domain = dataspace
+//range = screen space
+
+const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
+const width = +svg.attr('width');
+const height = +svg.attr('height');
+
+const drawBar = (data, pos, stat, year) => {
+  const margin = {top: 50, right: 20, bottom: 20, left: 125};
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const xScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
+    .domain([0, Object(d3__WEBPACK_IMPORTED_MODULE_0__["max"])(data, d => d[stat])]) //0 to max stat
+    .range([0, innerWidth]); //the bars will go as far as the width of the container
+
+  const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleBand"])() //useful for ordinal attributes - mapping onto a range defined by beginning points of rectangles
+    .domain(data.map(d => d.Player))
+    .range([0, innerHeight]); //range 0 to height will cause data elements to be arranged from top to bottom
+
+  const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])();
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
+
+  g.append('g').call(Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale));//putting yaxis here and grouping all of them
+  g.append('g').call(Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale))
+
+  g.selectAll('rect').data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
+    .enter().append('rect')
+      .attr('y', d => yScale(d.Player))
+      .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
+      .attr('height', yScale.bandwidth()); //bandwidth is the computed width of a single bar
+
+};
 
 /***/ })
 

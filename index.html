@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" type="text/css" media="screen" href="./css/00reset.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="./css/01css.css" />
 </head>
+
 <body>
   <div id="nav">
     <h2>NBA DASHBOARD 2016-2019</h2>
@@ -17,46 +19,54 @@
     </p>
     <p>
       Select Position:
-      <input class="position" type="radio" name="pos-type" value="PG" checked>
-      <label>Point Guard</label>      
-      <input class="position" type="radio" name="pos-type" value="SG" >
+      <input class="position" type="radio" name="pos" value="PG" checked>
+      <label>Point Guard</label>
+      <input class="position" type="radio" name="pos" value="SG">
       <label>Shooting Guard</label>
-      <input class="position" type="radio" name="pos-type" value="SF" >      
+      <input class="position" type="radio" name="pos" value="SF">
       <label>Small Forward</label>
-      <input class="position" type="radio" name="pos-type" value="PF" >
+      <input class="position" type="radio" name="pos" value="PF">
       <label>Power Forward</label>
-      <input class="position" type="radio" name="pos-type" value="C" >
+      <input class="position" type="radio" name="pos" value="C">
       <label>Center</label>
     </p>
     <p>
       Select Category:
-      <input class="stat" type="radio" name="stat-type" value="AST" checked>
+      <input class="stat" type="radio" name="stat" value="AST" checked>
       <label>Assists</label>
-      <input class="stat" type="radio" name="stat-type" value="TRB">
+      <input class="stat" type="radio" name="stat" value="TRB">
       <label>Rebounds</label>
-      <input class="stat" type="radio" name="stat-type" value="STL">
+      <input class="stat" type="radio" name="stat" value="STL">
       <label>Steals</label>
-      <input class="stat" type="radio" name="stat-type" value="BLK">
+      <input class="stat" type="radio" name="stat" value="BLK">
       <label>Blocks</label>
-      <input class="stat" type="radio" name="stat-type" value="PTS">
+      <input class="stat" type="radio" name="stat" value="PTS">
       <label>Points</label>
-      <input class="stat" type="radio" name="stat-type" value="FG">
+      <input class="stat" type="radio" name="stat" value="FGpct">
       <label>FG</label>
-      <input class="stat" type="radio" name="stat-type" value="FT">
+      <input class="stat" type="radio" name="stat" value="FTpct">
       <label>FT</label>
-      <input class="stat" type="radio" name="stat-type" value="ThreePointers">
+      <input class="stat" type="radio" name="stat" value="ThreePointers">
       <label>Threes</label>
-      <input class="stat" type="radio" name="stat-type" value="TOV">
-      <label>Turnovers</label>
+      <!-- <input class="stat" type="radio" name="stat" value="TOV">
+      <label>Turnovers</label> -->
     </p>
     <p>Select a year, position, and stat to see trends!</p>
   </div>
-
-  <svg width="960" height="500">
-    
-  </svg>
+  <section class="container">
+    <div class="chart-container">
+      <svg id="pie">
+      </svg>
+    </div>
+    <div class="chart-container right">
+      <svg id="bar" width="500" height="960">
+      </svg>
+    </div>
+  </section>
+  <div class="tooltip"></div>
   <script src="https://d3js.org/d3-queue.v3.min.js"></script>
   <script src="https://d3js.org/d3.v4.js"></script>
   <script src='bundle.js'></script>
 </body>
+
 </html>

@@ -3,128 +3,46 @@ import {
    csv 
   } 
   from 'd3';
+import { loadData } from './loadData';
+import { drawBar } from './newBar';
 //selecting svg on html
-const svg = select('svg');
+const svg = select('#bar');
 
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-//loading data set
-csv('../data/NBA_PPG_CSV_Master_2017_2019.csv').then(data => {
-  //top 20 of each position (pg, sg, sf, pf, c)
-  data.forEach(d => {
-    d.Year = +d.Year;
-    d.PTS = +d.PTS;
-    d.AST = +d.AST;
-    d.BLK = +d.BLK;
-    d.STL = +d.STL;
-    d.TRB = +d.TRB;
-    d.ThreePointers = +d.ThreePointers;
-    d.FGpct = +d.FGpct;
-    d.FTpct = +d.FTpct;
-    d.G = +d.G;
-    d.GS = +d.GS;
-  });
 
-  let pgData = data
-    .filter(player => player.Pos === 'PG' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-    })
-    .slice(0, 20);
+//pass year from radio button to select avg stats for year
+loadData().then(data => {
+  let yearsArr = [2017, 2018, 2019];
+  let currentYear = yearsArr[0];
+  let currentPos = d3.select('input[name="pos"]:checked').attr('value');
+  let currentStat = d3.select('input[name="stat"]:checked').attr('value');
+  
+  drawBar(data, currentPos, currentStat, currentYear);
+  d3.select('#year')
+    .property('min', currentYear)
+    .property('max', yearsArr[2])
+    .property('value', currentYear)
+    .on('input', () => {
+      currentYear = +d3.event.target.value;
+      data = data.filter(d => d.Year === currentYear);
+      drawBar(data, currentPos, currentStat, currentYear);
+    });
 
-  let sgData = data
-    .filter(player => player.Pos === 'SG' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-    })
-    .slice(0, 20);
+  // pass pos, stat, year data to drawbar function
+  // we might need to change data to only pass in data for certain positions // stats as well
+  d3.selectAll('input[name="pos"]')
+    .on("change", () => {
+      currentPos = d3.event.target.value;
+      data = data.filter(d => d.Pos === currentPos);
+      drawBar(data, currentPos, currentStat, currentYear);
+    });
 
+  d3.selectAll('input[name="stat"]')
+    .on("change", () => {
+      currentStat = d3.event.target.value;
+      drawBar(data, currentPos, currentStat, currentYear);
+    });
 
-  let sfData = data
-    .filter(player => player.Pos === 'SF' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-      if (a.BLK >= b.BLK) return -1;
-      if (a.BLK < b.BLK) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-    })
-    .slice(0, 20);
-
-
-  let pfData = data
-    .filter(player => player.Pos === 'PF' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-      if (a.FTpct >= b.FTpct) return -1;
-      if (a.FTpct < b.FTpct) return 1;
-      if (a.FGpct >= b.FGpct) return -1;
-      if (a.FGpct < b.FGpct) return 1;
-      if (a.BLK >= b.BLK) return -1;
-      if (a.BLK < b.BLK) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.ThreePointers >= b.ThreePointers) return -1;
-      if (a.ThreePointers < b.ThreePointers) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-    })
-    .slice(0, 20);
-
-  let cData = data
-    .filter(player => player.Pos === 'C' && player.Year === 2019 && player.GS > 30)
-    .sort((a, b) => {
-      if (a.PTS >= b.PTS) return -1;
-      if (a.PTS < b.PTS) return 1;
-      if (a.TRB >= b.TRB) return -1;
-      if (a.TRB < b.TRB) return 1;
-      if (a.FTpct >= b.FTpct) return -1;
-      if (a.FTpct < b.FTpct) return 1;
-      if (a.FGpct >= b.FGpct) return -1;
-      if (a.FGpct < b.FGpct) return 1;
-      if (a.BLK >= b.BLK) return -1;
-      if (a.BLK < b.BLK) return 1;
-      if (a.STL >= b.STL) return -1;
-      if (a.STL < b.STL) return 1;
-      if (a.AST >= b.AST) return -1;
-      if (a.AST < b.AST) return 1;
-    })
-    .slice(0, 20);
-
-
-    console.log('point guards', pgData)
-    console.log('shooting guards', sgData)
-    console.log('small', sfData)
-    console.log('power', pfData)
-    console.log('center', cData)
-
-});
+})
