@@ -29228,6 +29228,130 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/eventHandlers.js":
+/*!******************************!*\
+  !*** ./src/eventHandlers.js ***!
+  \******************************/
+/*! exports provided: handleYearChange, handleStatChange, handlePosChange */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleYearChange", function() { return handleYearChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleStatChange", function() { return handleStatChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handlePosChange", function() { return handlePosChange; });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
+/* harmony import */ var _newBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./newBar */ "./src/newBar.js");
+
+
+
+
+const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
+const width = +svg.attr('width');
+const height = +svg.attr('height');
+
+const handleYearChange = (e) => {
+  d3.selectAll('svg > *').remove();
+  console.log('changing year')
+  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
+    let yearsArr = [2017, 2018, 2019];
+    let currentYear = yearsArr[0];
+    // let currentPos = d3.select('input[name="pos"]').attr('value');
+    let currentPos = d3.select('option[name="pos"]').attr('value');
+    let currentStat = d3.select('input[name="stat"]').attr('value');
+
+    d3.select('#year')
+      .property('min', currentYear)
+      .property('max', yearsArr[2])
+      .property('value', currentYear)
+      .on('input', () => {
+        currentYear = +d3.event.target.value;
+        data = data.filter(d => d.Year === currentYear);
+        Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+      });
+  });
+};
+
+const handleStatChange = (e) => {
+  d3.selectAll('svg > *').remove();
+  console.log('changingStat')
+  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
+    let yearsArr = [2017, 2018, 2019];
+    let currentYear = yearsArr[0];
+    // let currentPos = d3.select('input[name="pos"]').attr('value');
+    let currentPos = d3.select('option[name="pos"]').attr('value');
+    let currentStat = d3.select('input[name="stat"]').attr('value');
+
+    d3.selectAll('input[name="stat"]')
+      .on("change", () => {
+        currentStat = d3.event.target.value;
+        Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+      });
+  });
+};
+
+const handlePosChange = (e) => {
+  d3.selectAll('svg > *').remove();
+  console.log('changingPos')
+  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
+    let yearsArr = [2017, 2018, 2019];
+    let currentYear = yearsArr[0];
+    // let currentPos = d3.select('input[name="pos"]').attr('value');
+    // let currentPos = d3.select('option[name="pos"]').attr('value');
+    let currentStat = d3.select('input[name="stat"]').attr('value');
+    console.log('before selectAll', currentPos)
+    d3.selectAll('option[name="pos"]')
+      .on("change", () => {
+        letcurrentPos = d3.event.target.value;
+        console.log('after selectAll', currentPos)
+        let posData;
+        posData = data.filter(d => d.Pos === currentPos);
+        Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(posData, currentPos, currentStat, currentYear);
+      });
+  });
+};
+
+//pass year from radio button to select avg stats for year
+// loadData().then(data => {
+//   let yearsArr = [2017, 2018, 2019];
+//   let currentYear = yearsArr[0];
+//   let currentPos = d3.select('input[name="pos"]:checked').attr('value');
+//   let currentStat = d3.select('input[name="stat"]:checked').attr('value');
+
+//   drawBar(data, currentPos, currentStat, currentYear);
+  // d3.select('#year')
+  //   .property('min', currentYear)
+  //   .property('max', yearsArr[2])
+  //   .property('value', currentYear)
+  //   .on('input', () => {
+  //     currentYear = +d3.event.target.value;
+  //     data = data.filter(d => d.Year === currentYear);
+  //     drawBar(data, currentPos, currentStat, currentYear);
+  //   });
+
+  // pass pos, stat, year data to drawbar function
+  // we might need to change data to only pass in data for certain positions // stats as well
+  // d3.selectAll('input[name="pos"]')
+  //   .on("change", () => {
+  //     currentPos = d3.event.target.value;
+  //     let posData;
+  //     posData = data.filter(d => d.Pos === currentPos);
+  //     drawBar(posData, currentPos, currentStat, currentYear);
+  //     console.log(posData)
+  //   });
+
+  // d3.selectAll('input[name="stat"]')
+  //   .on("change", () => {
+  //     currentStat = d3.event.target.value;
+  //     drawBar(data, currentPos, currentStat, currentYear);
+  //   });
+
+// });
+
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -29240,50 +29364,36 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 /* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
 /* harmony import */ var _newBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./newBar */ "./src/newBar.js");
+/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
+
+
 
 
 
 //selecting svg on html
 const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
-
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-
-//pass year from radio button to select avg stats for year
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   let yearsArr = [2017, 2018, 2019];
   let currentYear = yearsArr[0];
-  let currentPos = d3.select('input[name="pos"]:checked').attr('value');
-  let currentStat = d3.select('input[name="stat"]:checked').attr('value');
-  
+  // let currentPos = d3.select('input[name="pos"]').attr('value');
+  let currentPos = d3.select('option[name="pos"]').attr('value');
+  let currentStat = d3.select('input[name="stat"]').attr('value');
+
   Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-  d3.select('#year')
-    .property('min', currentYear)
-    .property('max', yearsArr[2])
-    .property('value', currentYear)
-    .on('input', () => {
-      currentYear = +d3.event.target.value;
-      data = data.filter(d => d.Year === currentYear);
-      Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-    });
+});
 
-  // pass pos, stat, year data to drawbar function
-  // we might need to change data to only pass in data for certain positions // stats as well
-  d3.selectAll('input[name="pos"]')
-    .on("change", () => {
-      currentPos = d3.event.target.value;
-      data = data.filter(d => d.Pos === currentPos);
-      Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-    });
+document.getElementById('year')
+  .addEventListener('input', _eventHandlers__WEBPACK_IMPORTED_MODULE_3__["handleYearChange"]);
 
-  d3.selectAll('input[name="stat"]')
-    .on("change", () => {
-      currentStat = d3.event.target.value;
-      Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-    });
+document.getElementById('position')
+  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_3__["handlePosChange"]);
 
-})
+document.getElementById('stats')
+  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_3__["handleStatChange"]);
+
 
 /***/ }),
 
@@ -29457,16 +29567,15 @@ const drawBar = (data, pos, stat, year) => {
     .domain(data.map(d => d.Player))
     .range([0, innerHeight]); //range 0 to height will cause data elements to be arranged from top to bottom
 
-  const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])();
-
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
 
   g.append('g').call(Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale));//putting yaxis here and grouping all of them
   g.append('g').call(Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale))
-
+  
   g.selectAll('rect').data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
-    .enter().append('rect')
+    .enter()
+    .append('rect')
       .attr('y', d => yScale(d.Player))
       .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
       .attr('height', yScale.bandwidth()); //bandwidth is the computed width of a single bar

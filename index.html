@@ -19,34 +19,43 @@
     </p>
     <p>
       Select Position:
-      <input class="position" type="radio" name="pos" value="PG" checked>
+      <input id="position" type="radio" name="pos" value="PG">
       <label>Point Guard</label>
-      <input class="position" type="radio" name="pos" value="SG">
+      <input id="position" type="radio" name="pos" value="SG">
       <label>Shooting Guard</label>
-      <input class="position" type="radio" name="pos" value="SF">
+      <input id="position" type="radio" name="pos" value="SF">
       <label>Small Forward</label>
-      <input class="position" type="radio" name="pos" value="PF">
+      <input id="position" type="radio" name="pos" value="PF">
       <label>Power Forward</label>
-      <input class="position" type="radio" name="pos" value="C">
+      <input id="position" type="radio" name="pos" value="C">
       <label>Center</label>
+
+      <!-- <select id="position">
+        <option name="pos" value="default">Select Position</option>
+        <option name="pos" value='PG'>PG</option>
+        <option name="pos" value='SG'>SG</option>
+        <option name="pos" value='SF'>SF</option>
+        <option name="pos" value='PF'>PF</option>
+        <option name="pos" value='C'>C</option>
+      </select> -->
     </p>
     <p>
       Select Category:
-      <input class="stat" type="radio" name="stat" value="AST" checked>
+      <input id="stats" type="radio" name="stat" value="AST">
       <label>Assists</label>
-      <input class="stat" type="radio" name="stat" value="TRB">
+      <input id="stats" type="radio" name="stat" value="TRB">
       <label>Rebounds</label>
-      <input class="stat" type="radio" name="stat" value="STL">
+      <input id="stats" type="radio" name="stat" value="STL">
       <label>Steals</label>
-      <input class="stat" type="radio" name="stat" value="BLK">
+      <input id="stats" type="radio" name="stat" value="BLK">
       <label>Blocks</label>
-      <input class="stat" type="radio" name="stat" value="PTS">
+      <input id="stats" type="radio" name="stat" value="PTS">
       <label>Points</label>
-      <input class="stat" type="radio" name="stat" value="FGpct">
+      <input id="stats" type="radio" name="stat" value="FGpct">
       <label>FG</label>
-      <input class="stat" type="radio" name="stat" value="FTpct">
+      <input id="stats" type="radio" name="stat" value="FTpct">
       <label>FT</label>
-      <input class="stat" type="radio" name="stat" value="ThreePointers">
+      <input id="stats" type="radio" name="stat" value="ThreePointers">
       <label>Threes</label>
       <!-- <input class="stat" type="radio" name="stat" value="TOV">
       <label>Turnovers</label> -->
@@ -64,8 +73,10 @@
     </div>
   </section>
   <div class="tooltip"></div>
-  <script src="https://d3js.org/d3-queue.v3.min.js"></script>
-  <script src="https://d3js.org/d3.v4.js"></script>
+  <!-- <script src="https://d3js.org/d3-queue.v3.min.js"></script> -->
+  <!-- <script src="https://d3js.org/d3.v4.js"></script> -->
+  <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+  <script src="https://d3js.org/d3.v5.js"></script>
   <script src='bundle.js'></script>
 </body>
 

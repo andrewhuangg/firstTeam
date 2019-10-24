@@ -28,16 +28,15 @@ export const drawBar = (data, pos, stat, year) => {
     .domain(data.map(d => d.Player))
     .range([0, innerHeight]); //range 0 to height will cause data elements to be arranged from top to bottom
 
-  const xAxis = axisTop();
-
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
 
   g.append('g').call(axisLeft(yScale));//putting yaxis here and grouping all of them
   g.append('g').call(axisTop(xScale))
-
+  
   g.selectAll('rect').data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
-    .enter().append('rect')
+    .enter()
+    .append('rect')
       .attr('y', d => yScale(d.Player))
       .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
       .attr('height', yScale.bandwidth()); //bandwidth is the computed width of a single bar
