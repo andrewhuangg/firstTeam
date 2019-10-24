@@ -34,3 +34,11 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+rect {
+  fill: rgb(223, 154, 51)
+}
+
+text {
+  font-size: 1em;
+}
