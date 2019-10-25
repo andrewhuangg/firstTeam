@@ -39,6 +39,11 @@ rect {
   fill: rgb(223, 154, 51)
 }
 
+circle {
+  fill: rgb(223, 154, 51);
+  opacity: 0.7;
+}
+
 text {
   font-size: 1em;
 }

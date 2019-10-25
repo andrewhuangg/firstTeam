@@ -2,7 +2,8 @@ import {
   select,
 } from 'd3';
 import { loadData } from './loadData';
-import { drawBar } from './newBar';
+import { drawBar } from './bar';
+import { drawScatter } from './scatterPlot';
 import { 
   handleYearChange, 
   handleStatChange, 
@@ -22,6 +23,7 @@ loadData().then(data => {
   let currentStat = d3.select('input[name="stat"]').attr('value');
 
   drawBar(data, currentPos, currentStat, currentYear);
+  drawScatter(data, currentPos, currentStat, currentYear);
 });
 
 document.getElementById('year')

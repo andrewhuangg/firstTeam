@@ -29228,6 +29228,80 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/bar.js":
+/*!********************!*\
+  !*** ./src/bar.js ***!
+  \********************/
+/*! exports provided: drawBar */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawBar", function() { return drawBar; });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+
+
+//domain = dataspace
+//range = screen space
+
+const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
+const width = +svg.attr('width');
+const height = +svg.attr('height');
+
+const drawBar = (data, pos, stat, year) => {
+  const margin = {top: 80, right: 20, bottom: 20, left: 125};
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const xScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
+    .domain([0, Object(d3__WEBPACK_IMPORTED_MODULE_0__["max"])(data, d => d[stat])]) //0 to max stat
+    .range([0, innerWidth]) //the bars will go as far as the width of the container
+    .nice();
+
+  const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleBand"])() //useful for ordinal attributes - mapping onto a range defined by beginning points of rectangles
+    .domain(data.map(d => d.Player))
+    .range([0, innerHeight]) //range 0 to height will cause data elements to be arranged from top to bottom
+    .padding(0.1)
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
+
+  g.append('g')
+    .call(Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale))//putting yaxis here and grouping all of them
+    .selectAll('.domain, .tick line') //selecting parent domain, and all line elements from the tick class
+      .remove();
+      
+  const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale).tickSize(-innerHeight)
+  const xAxisG = g.append('g').call(xAxis) //group element for xAxis
+
+  xAxisG
+    .selectAll('.domain').remove(); //selecting parent domain and removing them
+
+  xAxisG.append('text')
+    .attr('y', -30) //controls the text on the xaxis .. moving it up and down
+    .attr('x', innerWidth / 2) //center
+    .attr('fill', 'black')
+    .text(`${stat}`)
+  
+  g.selectAll('rect')
+    .data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
+    .enter()
+    .append('rect')
+      .attr('y', d => yScale(d.Player))
+      .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
+      .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
+      .attr('class', 'bar')
+
+  g.append('text')
+    .attr('y', -50) //y coordinate of label..
+    .attr('x', innerWidth / 4)
+    .text('Top players per position')
+
+
+};
+
+/***/ }),
+
 /***/ "./src/eventHandlers.js":
 /*!******************************!*\
   !*** ./src/eventHandlers.js ***!
@@ -29242,7 +29316,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handlePosChange", function() { return handlePosChange; });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 /* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
-/* harmony import */ var _newBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./newBar */ "./src/newBar.js");
+/* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
 
 
 
@@ -29267,7 +29341,7 @@ const handleYearChange = (e) => {
       .on('input', () => {
         currentYear = +d3.event.target.value;
         data = data.filter(d => d.Year === currentYear);
-        Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
       });
   });
 };
@@ -29284,7 +29358,7 @@ const handleStatChange = (e) => {
     d3.selectAll('input[name="stat"]')
       .on("change", () => {
         currentStat = d3.event.target.value;
-        Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
       });
   });
 };
@@ -29304,7 +29378,7 @@ const handlePosChange = (e) => {
         console.log('after selectAll', currentPos)
         let posData;
         posData = data.filter(d => d.Pos === currentPos);
-        Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(posData, currentPos, currentStat, currentYear);
+        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(posData, currentPos, currentStat, currentYear);
       });
   });
 };
@@ -29360,8 +29434,10 @@ const handlePosChange = (e) => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 /* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
-/* harmony import */ var _newBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./newBar */ "./src/newBar.js");
-/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
+/* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
+/* harmony import */ var _scatterPlot__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scatterPlot */ "./src/scatterPlot.js");
+/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
+
 
 
 
@@ -29379,17 +29455,18 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   let currentPos = d3.select('input[name="pos"]').attr('value');
   let currentStat = d3.select('input[name="stat"]').attr('value');
 
-  Object(_newBar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+  Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+  Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, currentPos, currentStat, currentYear);
 });
 
 document.getElementById('year')
-  .addEventListener('input', _eventHandlers__WEBPACK_IMPORTED_MODULE_3__["handleYearChange"]);
+  .addEventListener('input', _eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleYearChange"]);
 
 document.getElementById('position')
-  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_3__["handlePosChange"]);
+  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handlePosChange"]);
 
 document.getElementById('stats')
-  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_3__["handleStatChange"]);
+  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleStatChange"]);
 
 
 /***/ }),
@@ -29532,108 +29609,78 @@ const loadData = () =>
 
 /***/ }),
 
-/***/ "./src/newBar.js":
-/*!***********************!*\
-  !*** ./src/newBar.js ***!
-  \***********************/
-/*! exports provided: drawBar */
+/***/ "./src/scatterPlot.js":
+/*!****************************!*\
+  !*** ./src/scatterPlot.js ***!
+  \****************************/
+/*! exports provided: drawScatter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawBar", function() { return drawBar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawScatter", function() { return drawScatter; });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
 //domain = dataspace
 //range = screen space
 
-const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
+const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#scatter');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-const drawBar = (data, pos, stat, year) => {
+const drawScatter = (data, pos, stat, year) => {
   const margin = {top: 80, right: 20, bottom: 20, left: 125};
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
+  const circleRadius = 5;
+  const xValue = d => d.GS;
+  const yValue = d => d.PTS;
 
   const xScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
-    .domain([0, Object(d3__WEBPACK_IMPORTED_MODULE_0__["max"])(data, d => d[stat])]) //0 to max stat
-    .range([0, innerWidth]); //the bars will go as far as the width of the container
+    .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, xValue))
+    .range([0, innerWidth])
+    .nice();
 
-  const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleBand"])() //useful for ordinal attributes - mapping onto a range defined by beginning points of rectangles
-    .domain(data.map(d => d.Player))
-    .range([0, innerHeight]) //range 0 to height will cause data elements to be arranged from top to bottom
-    .padding(0.1);
+  const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
+    .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, yValue))
+    .range([0, innerHeight])
 
   const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
+    .attr('transform', `translate(${margin.left},${margin.top})`)
+
+  const yAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale)
+    .tickSize(-innerWidth)
 
   g.append('g')
-    .call(Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale))//putting yaxis here and grouping all of them
-    .selectAll('.domain, .tick line') //selecting parent domain, and all line elements from the tick class
+    .call(yAxis)
+    .selectAll('.domain')
       .remove();
       
   const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale).tickSize(-innerHeight)
-  const xAxisG = g.append('g').call(xAxis) //group element for xAxis
+  const xAxisG = g.append('g').call(xAxis)
 
   xAxisG
-    .selectAll('.domain').remove(); //selecting parent domain and removing them
+    .selectAll('.domain').remove();
 
   xAxisG.append('text')
-    .attr('y', -30) //controls the text on the xaxis .. moving it up and down
-    .attr('x', innerWidth / 2) //center
+    .attr('y', -30)
+    .attr('x', innerWidth / 2)
     .attr('fill', 'black')
     .text(`${stat}`)
   
-  g.selectAll('rect')
-    .data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
+  g.selectAll('circle')
+    .data(data)
     .enter()
-    .append('rect')
-      .attr('y', d => yScale(d.Player))
-      .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
-      .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
-      .attr('class', 'bar')
+    .append('circle')
+      .attr('cy', d => yScale(yValue(d)))
+      .attr('cx', d => xScale(xValue(d)))
+      .attr('r', circleRadius)
 
   g.append('text')
-    .attr('y', -50) //y coordinate of label..
+    .attr('y', -50)
     .attr('x', innerWidth / 4)
     .text('Top players per position')
-
-
-  // let update = g.selectAll('.bar').data(data)
-
-  // let t = d3.transition()
-  //   .duration(1000)
-  //   .attr('width', d => xScale(d[stat]))
-  //   .ease(d3.easeBounceOut)
-
-  // update
-  //   .enter()
-  //   .append('rect')
-  //     .classed('bar', true)
-  //     .transition(t);
-
-  // update
-  //   .exit()
-  //   .transition(t)
-  //     .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
-  //     .attr('x', innerWidth)
-  //     .attr('height', 0)
-  //     .remove();
-
-  // update
-  //   .enter()
-  //   .append('rect')
-  //     .classed('bar', true)
-  //     .attr('x', innerWidth)
-  //     .attr('height', 0)
-  //   .merge(update)
-  //     .attr('width', d => xScale(d[stat]))
-  //     .transition(t)
-  //     .delay((d, i) => i * 100)
-  //       .attr('x', 0)
-  //       .attr('height', yScale.bandwidth())
 
 
 };

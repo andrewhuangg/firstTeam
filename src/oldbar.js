@@ -1,14 +1,14 @@
 // import { nice } from 'd3';
 
 // export const createBar = (width, height) => {
-//   let bar =
+//   let bar = 
 //     d3.select('#bar')
 //       .attr('width', width)
 //       .attr('height', height)
 
 //   bar.append('g')
 //     .classed('x-axis', true)
-
+ 
 //   bar.append('g')
 //     .classed('y-axis', true);
 
@@ -30,7 +30,7 @@
 // export const highlightBars = (year) => {
 //   d3.select('#bar')
 //     .selectAll('rect')
-//     .attr('fill', d => d.year === year ? '#16a085' : '#1abc9c');
+//       .attr('fill', d => d.year === year ? '#16a085' : '#1abc9c');
 // };
 
 // export const drawBar = (data, currentYear, currentPos, currentStat) => {
@@ -49,30 +49,30 @@
 
 //   // const g = bar.append('g')
 //   //   .attr('transform', `translate(20, 20)`);
-//   // .attr('transform', `translate(${margin.left}, ${margin.right})`);
+//     // .attr('transform', `translate(${margin.left}, ${margin.right})`);
 
 //   //posData organized by Year
-//   let posData =
+//   let posData = 
 //     data.filter(d => d.POS === currentPos)
 //       .sort((a, b) => a.Year - b.Year)
-
+  
 //   //players organized by stat, decreasing - increasing
-//   let players =
+//   let players = 
 //     posData.sort((a, b) => b[currentStat] - a[currentStat])
 //       .slice(0, 20);
+  
 
-
-//   let xScale =
+//   let xScale = 
 //     d3.scaleBand()
 //       .domain(players.map(d => d.Player))
 //       .range([0, innerWidth])
-//   // .range([margin.left, width - margin.right])
-//   // .padding(0.1)
-//   // .range([0, width])
-//   // .padding(0.1)
+//       // .range([margin.left, width - margin.right])
+//       // .padding(0.1)
+//       // .range([0, width])
+//       // .padding(0.1)
 
 //   //when we append rect, we need to set range and height to x and yscales
-//   let yScale =
+//   let yScale = 
 //     d3.scaleLinear()
 //       .domain([0, d3.max(players, d => d[currentStat])])
 //       .range([innerHeight, 0])
@@ -101,17 +101,17 @@
 //     .style('text-anchor', 'end')
 //     .attr("transform", "rotate(-90)")
 
-//   let axisLabel = currentStat ===
+//   let axisLabel = currentStat === 
 //     "AST" ? `${currentStat} for year ${currentYear}` :
 //     currentStat === "REB" ? `${currentStat} for year ${currentYear}` :
-//       currentStat === "STL" ? `${currentStat} for year ${currentYear}` :
-//         currentStat === "BLK" ? `${currentStat} for year ${currentYear}` :
-//           currentStat === "PTS" ? `${currentStat} for year ${currentYear}` :
-//             currentStat === "FG" ? `${currentStat} for year ${currentYear}` :
-//               currentStat === "FT" ? `${currentStat} for year ${currentYear}` :
-//                 currentStat === "ThreePointers" ? `${currentStat} for year ${currentYear}` :
-//                   `TOV for year ${currentYear}`;
-
+//     currentStat === "STL" ? `${currentStat} for year ${currentYear}` :
+//     currentStat === "BLK" ? `${currentStat} for year ${currentYear}` : 
+//     currentStat === "PTS" ? `${currentStat} for year ${currentYear}` :
+//     currentStat === "FG" ? `${currentStat} for year ${currentYear}` :
+//     currentStat === "FT" ? `${currentStat} for year ${currentYear}` :
+//     currentStat === "ThreePointers" ? `${currentStat} for year ${currentYear}` : 
+//     `TOV for year ${currentYear}`;
+ 
 //   let barTitle = currentPos ? `${currentPos} stats for ${currentYear}` : `please select a year to see annual trends`;
 
 //   d3.select(".y-axis-label")
@@ -120,34 +120,34 @@
 //   d3.select(".bar-title")
 //     .text(barTitle);
 
-//   let t =
+//   let t = 
 //     d3.transition()
 //       .duration(1000)
 //       .ease(d3.easeBounceOut);
 
-//   let update =
+//   let update = 
 //     bar.selectAll('.bar')
-//       .data(players)
-
+//        .data(players)
+  
 //   update
 //     .exit()
 //     .transition(t)
-//     .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
-//     .attr('y', height - margin.bottom)
-//     .attr('height', 0)
-//     .remove();
+//       .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
+//       .attr('y', height - margin.bottom)
+//       .attr('height', 0)
+//       .remove();
 
 //   update
 //     .enter()
 //     .append('rect')
-//     .classed('bar', true)
-//     .attr('y', height) //how far the bar is from the top of graph
-//     .attr('height', 0) //where it starts
+//       .classed('bar', true)
+//       .attr('y', height) //how far the bar is from the top of graph
+//       .attr('height', 0) //where it starts
 //     .merge(update)
-//     .attr('x', d => xScale(d.Player) + 25) //how this is spread across the graph
-//     .attr('width', d => xScale.bandwidth() / 2) //how wide the bars are
-//     .transition(t)
-//     .delay((d, i) => i * 100)
-//     .attr('y', d => yScale(d[currentStat]) - 60) //distance between bar and top of graph
-//     .attr('height', d => height - yScale(d[currentStat]))//- margin.bottom)//- 90) //how tall the bars are
+//       .attr('x', d => xScale(d.Player) + 25) //how this is spread across the graph
+//       .attr('width', d => xScale.bandwidth() / 2) //how wide the bars are
+//       .transition(t)
+//       .delay((d, i) => i * 100)
+//         .attr('y', d => yScale(d[currentStat]) - 60) //distance between bar and top of graph
+//         .attr('height', d => height - yScale(d[currentStat]))//- margin.bottom)//- 90) //how tall the bars are
 // };      
