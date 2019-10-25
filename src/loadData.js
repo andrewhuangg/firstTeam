@@ -34,12 +34,12 @@ export const loadData = () =>
           if (a.PTS < b.PTS) return 1;
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
           if (a.ThreePointers >= b.ThreePointers) return -1;
           if (a.ThreePointers < b.ThreePointers) return 1;
           if (a.STL >= b.STL) return -1;
           if (a.STL < b.STL) return 1;
-          if (a.TRB >= b.TRB) return -1;
-          if (a.TRB < b.TRB) return 1;
         })
         .slice(0, 20);
 
@@ -123,5 +123,6 @@ export const loadData = () =>
 
       //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);
+
       return newData;
     });

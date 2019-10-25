@@ -42,3 +42,7 @@ rect {
 text {
   font-size: 1em;
 }
+
+.tick line {
+  stroke-width: 0.5px;
+}

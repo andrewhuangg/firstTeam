@@ -15,7 +15,6 @@ export const handleYearChange = (e) => {
     let yearsArr = [2017, 2018, 2019];
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
-    // let currentPos = d3.select('option[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
 
     d3.select('#year')
@@ -37,7 +36,6 @@ export const handleStatChange = (e) => {
     let yearsArr = [2017, 2018, 2019];
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
-    // let currentPos = d3.select('option[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
 
     d3.selectAll('input[name="stat"]')
@@ -55,7 +53,6 @@ export const handlePosChange = (e) => {
     let yearsArr = [2017, 2018, 2019];
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
-    // let currentPos = d3.select('option[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
     console.log('before selectAll', currentPos)
     d3.selectAll('input[name="pos"]') //option

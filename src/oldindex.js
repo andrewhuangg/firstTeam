@@ -137,18 +137,18 @@
 //   xAxisG.select('.domain').remove();
 //   zAxisG.select('.domain').remove();
 
-//   g.selectAll('rect')
-//     .data(data)
-//     .enter()
-//     .append('rect')
-//       .attr('y', d => yScale(yValue(d)))
-//       // .attr('width', d => xScale(xValue(d))) // d is one row of our data table returns linear scale of (domain)
-//       .attr('width', '0')
-//       .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
-//       .attr('class', 'bar')
-//       .transition()
-//         .duration(1000)
-//         .attr('width', d => xScale(xValue(d)))
+  // g.selectAll('rect')
+  //   .data(data)
+  //   .enter()
+  //   .append('rect')
+  //     .attr('y', d => yScale(yValue(d)))
+  //     // .attr('width', d => xScale(xValue(d))) // d is one row of our data table returns linear scale of (domain)
+  //     .attr('width', '0')
+  //     .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
+  //     .attr('class', 'bar')
+  //     .transition()
+  //       .duration(1000)
+  //       .attr('width', d => xScale(xValue(d)))
 
 //   g.selectAll('bar')
 //     .data(data)
