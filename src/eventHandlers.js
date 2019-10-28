@@ -16,6 +16,7 @@ export const handleYearChange = (e) => {
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
     d3.select('#year')
       .property('min', currentYear)
@@ -37,6 +38,7 @@ export const handleStatChange = (e) => {
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
     d3.selectAll('input[name="stat"]')
       .on("change", () => {
@@ -54,6 +56,8 @@ export const handlePosChange = (e) => {
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+
     console.log('before selectAll', currentPos)
     d3.selectAll('input[name="pos"]') //option
       .on("change", () => {

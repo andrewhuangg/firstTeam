@@ -21,9 +21,10 @@ loadData().then(data => {
   // let currentPos = d3.select('input[name="pos"]').attr('value');
   let currentPos = d3.select('input[name="pos"]').attr('value');
   let currentStat = d3.select('input[name="stat"]').attr('value');
+  let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
-  drawBar(data, currentPos, currentStat, currentYear);
-  drawScatter(data, currentPos, currentStat, currentYear);
+  drawBar(data, currentPos, currentStat, currentYear, columns);
+  drawScatter(data, currentPos, currentStat, currentYear, columns);
 });
 
 document.getElementById('year')

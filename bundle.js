@@ -29302,6 +29302,31 @@ const drawBar = (data, pos, stat, year) => {
 
 /***/ }),
 
+/***/ "./src/dropdownMenu.js":
+/*!*****************************!*\
+  !*** ./src/dropdownMenu.js ***!
+  \*****************************/
+/*! exports provided: dropdownMenu */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dropdownMenu", function() { return dropdownMenu; });
+
+const dropdownMenu = (selection, props) => {
+  const { options } = props;
+
+  let select = selection.selectAll('select').data([null]);
+  select = select.enter().append('select').merge(select);
+
+  const option = select.selectAll('option').data(options)
+  option.enter().append('option').merge(option)
+    .attr('value', d => d)
+    .text(d => d);
+}
+
+/***/ }),
+
 /***/ "./src/eventHandlers.js":
 /*!******************************!*\
   !*** ./src/eventHandlers.js ***!
@@ -29333,6 +29358,7 @@ const handleYearChange = (e) => {
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
     d3.select('#year')
       .property('min', currentYear)
@@ -29354,6 +29380,7 @@ const handleStatChange = (e) => {
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
     d3.selectAll('input[name="stat"]')
       .on("change", () => {
@@ -29371,6 +29398,8 @@ const handlePosChange = (e) => {
     let currentYear = yearsArr[0];
     let currentPos = d3.select('input[name="pos"]').attr('value');
     let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+
     console.log('before selectAll', currentPos)
     d3.selectAll('input[name="pos"]') //option
       .on("change", () => {
@@ -29454,9 +29483,10 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   // let currentPos = d3.select('input[name="pos"]').attr('value');
   let currentPos = d3.select('input[name="pos"]').attr('value');
   let currentStat = d3.select('input[name="stat"]').attr('value');
+  let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
-  Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-  Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, currentPos, currentStat, currentYear);
+  Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear, columns);
+  Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, currentPos, currentStat, currentYear, columns);
 });
 
 document.getElementById('year')
@@ -29603,7 +29633,8 @@ const loadData = () =>
 
       //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);
-
+      
+      console.log(data.columns)
       return newData;
     });
 
@@ -29620,6 +29651,8 @@ const loadData = () =>
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawScatter", function() { return drawScatter; });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _dropdownMenu__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dropdownMenu */ "./src/dropdownMenu.js");
+
 
 
 //domain = dataspace
@@ -29630,6 +29663,12 @@ const width = +svg.attr('width');
 const height = +svg.attr('height');
 
 const drawScatter = (data, pos, stat, year) => {
+  // select('#nav')
+  //   .call(dropdownMenu, {
+  //     options: data.columns
+  //   });
+  console.log(data)
+
   const margin = {top: 80, right: 20, bottom: 20, left: 125};
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;

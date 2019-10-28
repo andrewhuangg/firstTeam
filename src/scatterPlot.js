@@ -7,6 +7,7 @@ import {
   max,
 }
 from 'd3';
+import { dropdownMenu } from './dropdownMenu';
 
 //domain = dataspace
 //range = screen space
@@ -16,6 +17,12 @@ const width = +svg.attr('width');
 const height = +svg.attr('height');
 
 export const drawScatter = (data, pos, stat, year) => {
+  // select('#nav')
+  //   .call(dropdownMenu, {
+  //     options: data.columns
+  //   });
+  console.log(data)
+
   const margin = {top: 80, right: 20, bottom: 20, left: 125};
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
