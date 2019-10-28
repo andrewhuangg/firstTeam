@@ -29634,8 +29634,11 @@ const drawScatter = (data, pos, stat, year) => {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const circleRadius = 5;
+
   const xValue = d => d.GS;
+  const xAxisLabel = 'Games Started'
   const yValue = d => d.PTS;
+  const yAxisLabel = 'Points'
 
   const xScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
     .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, xValue))
@@ -29645,29 +29648,38 @@ const drawScatter = (data, pos, stat, year) => {
   const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
     .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, yValue))
     .range([0, innerHeight])
+    .nice();
 
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`)
 
   const yAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale)
     .tickSize(-innerWidth)
+    .tickPadding(5)
 
-  g.append('g')
-    .call(yAxis)
-    .selectAll('.domain')
-      .remove();
+  const yAxisG = g.append('g').call(yAxis)
+  yAxisG.selectAll('.domain').remove();
+
+  yAxisG.append('text')
+    .attr('y', -50)
+    .attr('x', - innerHeight / 2)
+    .attr('fill', 'black')
+    .attr('transform', `rotate(-90)`)
+    .attr('text-anchor', 'middle')
+    .text(yAxisLabel)
       
-  const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale).tickSize(-innerHeight)
-  const xAxisG = g.append('g').call(xAxis)
+  const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale)
+    .tickSize(-innerHeight)
+    .tickPadding(5)
 
-  xAxisG
-    .selectAll('.domain').remove();
+  const xAxisG = g.append('g').call(xAxis)
+  xAxisG.selectAll('.domain').remove();
 
   xAxisG.append('text')
     .attr('y', -30)
     .attr('x', innerWidth / 2)
     .attr('fill', 'black')
-    .text(`${stat}`)
+    .text(xAxisLabel)
   
   g.selectAll('circle')
     .data(data)
@@ -29678,6 +29690,7 @@ const drawScatter = (data, pos, stat, year) => {
       .attr('r', circleRadius)
 
   g.append('text')
+    .attr('class', 'title')
     .attr('y', -50)
     .attr('x', innerWidth / 4)
     .text('Top players per position')
