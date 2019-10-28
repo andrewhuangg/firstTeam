@@ -23,7 +23,7 @@ loadData().then(data => {
   let currentStat = d3.select('input[name="stat"]').attr('value');
   let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
-  drawBar(data, currentPos, currentStat, currentYear, columns);
+  drawBar(data, currentPos, currentStat, currentYear);
   drawScatter(data, currentPos, currentStat, currentYear, columns);
 });
 

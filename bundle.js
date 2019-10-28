@@ -29314,10 +29314,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dropdownMenu", function() { return dropdownMenu; });
 
 const dropdownMenu = (selection, props) => {
-  const { options } = props;
+  const { 
+    options,
+    onOptionClicked
+   } = props;
 
   let select = selection.selectAll('select').data([null]);
-  select = select.enter().append('select').merge(select);
+  select = select.enter().append('select').merge(select)
+   .on('change', function() { //using function to preserve the keyword this
+     onOptionClicked(this.value)
+   });
 
   const option = select.selectAll('option').data(options)
   option.enter().append('option').merge(option)
@@ -29485,7 +29491,7 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   let currentStat = d3.select('input[name="stat"]').attr('value');
   let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
-  Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear, columns);
+  Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
   Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, currentPos, currentStat, currentYear, columns);
 });
 
@@ -29662,12 +29668,14 @@ const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#scatter');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-const drawScatter = (data, pos, stat, year) => {
-  // select('#nav')
-  //   .call(dropdownMenu, {
-  //     options: data.columns
-  //   });
-  console.log(data)
+const drawScatter = (data, pos, stat, year, columns) => {
+  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#nav')
+    .call(_dropdownMenu__WEBPACK_IMPORTED_MODULE_1__["dropdownMenu"], {
+      options: columns,
+      onOptionClicked: (column) => {
+        console.log(column)
+      }
+    });
 
   const margin = {top: 80, right: 20, bottom: 20, left: 125};
   const innerWidth = width - margin.left - margin.right;

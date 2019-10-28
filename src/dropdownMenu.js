@@ -1,9 +1,15 @@
 
 export const dropdownMenu = (selection, props) => {
-  const { options } = props;
+  const { 
+    options,
+    onOptionClicked
+   } = props;
 
   let select = selection.selectAll('select').data([null]);
-  select = select.enter().append('select').merge(select);
+  select = select.enter().append('select').merge(select)
+   .on('change', function() { //using function to preserve the keyword this
+     onOptionClicked(this.value)
+   });
 
   const option = select.selectAll('option').data(options)
   option.enter().append('option').merge(option)

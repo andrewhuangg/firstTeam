@@ -16,12 +16,14 @@ const svg = select('#scatter');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-export const drawScatter = (data, pos, stat, year) => {
-  // select('#nav')
-  //   .call(dropdownMenu, {
-  //     options: data.columns
-  //   });
-  console.log(data)
+export const drawScatter = (data, pos, stat, year, columns) => {
+  select('#nav')
+    .call(dropdownMenu, {
+      options: columns,
+      onOptionClicked: (column) => {
+        console.log(column)
+      }
+    });
 
   const margin = {top: 80, right: 20, bottom: 20, left: 125};
   const innerWidth = width - margin.left - margin.right;
