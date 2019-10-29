@@ -29317,31 +29317,34 @@ __webpack_require__.r(__webpack_exports__);
 const handleScatterStat = (selection, props) => {
   const { 
     options,
-    onOptionClicked
+    onOptionClicked,
+    selectedOption
    } = props;
 
   let select = selection.selectAll('select').data([null]);
   select = select.enter().append('select').merge(select)
    .on('change', function() { //using function to preserve the keyword this
-     onOptionClicked(this.value)
+     onOptionClicked(this.value);
    });
 
-  const option = select.selectAll('option').data(options)
+  const option = select.selectAll('option').data(options);
   option.enter().append('option').merge(option)
     .attr('value', d => d)
+    .property('selected', d => d === selectedOption)
     .text(d => d);
+
 };
 
 const handleScatterYear = (selection, props) => {
   const {
     options,
-    onOptionClicked
+    onOptionClicked,
   } = props;
 
   let select = selection.selectAll('select').data([null]);
   select = select.enter().append('select').merge(select)
     .on('change', function () {
-      onOptionClicked(this.value)
+      onOptionClicked(this.value);
     });
 
   const option = select.selectAll('option').data(options)
@@ -29353,7 +29356,8 @@ const handleScatterYear = (selection, props) => {
 const handleScatterPos = (selection, props) => {
   const {
     options,
-    onOptionClicked
+    onOptionClicked,
+    selectedOption
   } = props;
 
   let select = selection.selectAll('select').data([null]);
@@ -29365,8 +29369,42 @@ const handleScatterPos = (selection, props) => {
   const option = select.selectAll('option').data(options)
   option.enter().append('option').merge(option)
     .attr('value', d => d)
+    .property('selected', d => d === selectedOption)
     .text(d => d);
 };
+
+
+//attempted to create one massive event handler for DRY code.
+// export const handleScatter = (selection, props) => {
+//   const {
+//     xCol,
+//     years,
+//     pos,
+//     onOptionClicked,
+//     selectedOption
+//   } = props;
+
+//   let select = selection.selectAll('select').data([null]);
+//   select = select.enter().append('select').merge(select)
+//     .on('change', function () { //using function to preserve the keyword this
+//       onOptionClicked(this.value)
+//     });
+
+//   const xColumn = select.selectAll('option').data(xCol)
+//   xColumn.enter().append('option').merge(xColumn)
+//     .attr('value', d => d)
+//     .text(d => d);
+
+//   const yearSelection = select.selectAll('option').data(years)
+//   yearSelection.enter().append('option').merge(xColumn)
+//     .attr('value', d => d)
+//     .text(d => d);
+
+//   const posSelection = select.selectAll('option').data(pos)
+//   posSelection.enter().append('option').merge(posSelection)
+//     .attr('value', d => d)
+//     .text(d => d);
+// };
 
 /***/ }),
 
@@ -29384,6 +29422,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
 /* harmony import */ var _scatterPlot__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scatterPlot */ "./src/scatterPlot.js");
 /* harmony import */ var _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./oldeventHandlers */ "./src/oldeventHandlers.js");
+/* harmony import */ var _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
 
 
@@ -29392,60 +29431,126 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-//selecting svg on html
-const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
+const svgB = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
+const svgSc = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#scatter');
+const widthB = +svgB.attr('width');
+const heightB = +svgB.attr('height');
+const widthSc = +svgSc.attr('width');
+const heightSc = +svgSc.attr('height');
+
+let yearsArr = [2017, 2018, 2019];
+let columns = ['GS', 'MP', 'ThreePointers', 'TRB', 'AST', 'STL', 'BLK', 'PTS', 'TOV'];
+let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
+let xColumn;
+let yColumn;
+let pos;
 
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-  let yearsArr = [2017, 2018, 2019];
-  let currentYear = yearsArr[0];
-  let currentPos = d3.select('input[name="pos"]').attr('value');
-  let currentStat = d3.select('input[name="stat"]').attr('value');
-  let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-  let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
+  xColumn = columns[0];
+  yColumn = columns[1];
+  // drawBar(data, currentPos, currentStat, currentYear);
+  // drawScatter(data, currentPos, currentStat, currentYear, columns);
 
-  Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-  Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, currentPos, currentStat, currentYear, columns);
-  //const title = 'Top Players Per Position'
-  let xColumn;
-  let selectedYear;
-  let pos;
-
-  const xColumnClicked = (column, year, position) => {
+  const xColumnClicked = (column) => {
     xColumn = column;
-    selectedYear = year;
-    pos = position;
-    Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, pos, currentStat, selectedYear, column);
+    svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data,
+    });
   };
 
-  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#nav')
+  const yColumnClicked = (column) => {
+    yColumn = column;
+
+    svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data,
+    });
+  };
+
+  const selectedYear = (year) => {
+
+    svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data: data.filter(d => d.Year === parseInt(year))
+    });
+  };
+
+  const selectedPos = (pos) => {
+
+    svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data: data.filter(d => d[pos])
+    });
+  };
+
+  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#x-menu')
     .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterStat"], {
       options: columns,
-      onOptionClicked: xColumnClicked
+      onOptionClicked: xColumnClicked,
+      selectedOption: xColumn
+    });
+  
+  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#y-menu')
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterStat"], {
+      options: columns,
+      onOptionClicked: yColumnClicked,
+      selectedOption: yColumn
     });
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#year')
     .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterYear"], {
       options: yearsArr,
-      onOptionClicked: xColumnClicked
+      onOptionClicked: selectedYear
     });
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#pos')
     .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterPos"], {
       options: positions,
-      onOptionClicked: xColumnClicked
+      onOptionClicked: selectedPos
     });
+
+  svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
+    circleRadius: 5,
+    xValue: d => d[xColumn],
+    xAxisLabel: xColumn,
+    yValue: d => d[yColumn],
+    yAxisLabel: yColumn,
+    margin: { top: 80, right: 20, bottom: 20, left: 125 },
+    widthSc,
+    heightSc,
+    data,
+  });
+
 });
-
-document.getElementById('year')
-  .addEventListener('input', _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleYearChange"]);
-
-document.getElementById('position')
-  .addEventListener('change', _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__["handlePosChange"]);
-
-document.getElementById('stats')
-  .addEventListener('change', _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleStatChange"]);
 
 
 /***/ }),
@@ -29592,86 +29697,80 @@ const loadData = () =>
 /*!*********************************!*\
   !*** ./src/oldeventHandlers.js ***!
   \*********************************/
-/*! exports provided: handleYearChange, handleStatChange, handlePosChange */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleYearChange", function() { return handleYearChange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleStatChange", function() { return handleStatChange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handlePosChange", function() { return handlePosChange; });
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
-/* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
+// import {
+//   select
+// } from 'd3';
+// import { loadData } from './loadData';
+// import { drawBar } from './bar';
 
+// const svg = select('#bar');
+// const width = +svg.attr('width');
+// const height = +svg.attr('height');
 
+// export const handleYearChange = (e) => {
+//   d3.selectAll('svg > *').remove();
+//   console.log('changing year')
+//   loadData().then(data => {
+//     let yearsArr = [2017, 2018, 2019];
+//     let currentYear = yearsArr[0];
+//     let currentPos = d3.select('input[name="pos"]').attr('value');
+//     let currentStat = d3.select('input[name="stat"]').attr('value');
+//     let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
+//     d3.select('#year')
+//       .property('min', currentYear)
+//       .property('max', yearsArr[2])
+//       .property('value', currentYear)
+//       .on('input', () => {
+//         currentYear = +d3.event.target.value;
+//         data = data.filter(d => d.Year === currentYear);
+//         drawBar(data, currentPos, currentStat, currentYear);
+//       });
+//   });
+// };
 
-const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
+// export const handleStatChange = (e) => {
+//   d3.selectAll('svg > *').remove();
+//   console.log('changingStat')
+//   loadData().then(data => {
+//     let yearsArr = [2017, 2018, 2019];
+//     let currentYear = yearsArr[0];
+//     let currentPos = d3.select('input[name="pos"]').attr('value');
+//     let currentStat = d3.select('input[name="stat"]').attr('value');
+//     let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
-const handleYearChange = (e) => {
-  d3.selectAll('svg > *').remove();
-  console.log('changing year')
-  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-    let yearsArr = [2017, 2018, 2019];
-    let currentYear = yearsArr[0];
-    let currentPos = d3.select('input[name="pos"]').attr('value');
-    let currentStat = d3.select('input[name="stat"]').attr('value');
-    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+//     d3.selectAll('input[name="stat"]')
+//       .on("change", () => {
+//         currentStat = d3.event.target.value;
+//         drawBar(data, currentPos, currentStat, currentYear);
+//       });
+//   });
+// };
 
-    d3.select('#year')
-      .property('min', currentYear)
-      .property('max', yearsArr[2])
-      .property('value', currentYear)
-      .on('input', () => {
-        currentYear = +d3.event.target.value;
-        data = data.filter(d => d.Year === currentYear);
-        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-      });
-  });
-};
+// export const handlePosChange = (e) => {
+//   d3.selectAll('svg > *').remove();
+//   console.log('changingPos')
+//   loadData().then(data => {
+//     let yearsArr = [2017, 2018, 2019];
+//     let currentYear = yearsArr[0];
+//     let currentPos = d3.select('input[name="pos"]').attr('value');
+//     let currentStat = d3.select('input[name="stat"]').attr('value');
+//     let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
 
-const handleStatChange = (e) => {
-  d3.selectAll('svg > *').remove();
-  console.log('changingStat')
-  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-    let yearsArr = [2017, 2018, 2019];
-    let currentYear = yearsArr[0];
-    let currentPos = d3.select('input[name="pos"]').attr('value');
-    let currentStat = d3.select('input[name="stat"]').attr('value');
-    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-
-    d3.selectAll('input[name="stat"]')
-      .on("change", () => {
-        currentStat = d3.event.target.value;
-        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-      });
-  });
-};
-
-const handlePosChange = (e) => {
-  d3.selectAll('svg > *').remove();
-  console.log('changingPos')
-  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-    let yearsArr = [2017, 2018, 2019];
-    let currentYear = yearsArr[0];
-    let currentPos = d3.select('input[name="pos"]').attr('value');
-    let currentStat = d3.select('input[name="stat"]').attr('value');
-    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-
-    console.log('before selectAll', currentPos)
-    d3.selectAll('input[name="pos"]') //option
-      .on("change", () => {
-        letcurrentPos = d3.event.target.value;
-        console.log('after selectAll', currentPos)
-        let posData;
-        posData = data.filter(d => d.Pos === currentPos);
-        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(posData, currentPos, currentStat, currentYear);
-      });
-  });
-};
+//     console.log('before selectAll', currentPos)
+//     d3.selectAll('input[name="pos"]') //option
+//       .on("change", () => {
+//         letcurrentPos = d3.event.target.value;
+//         console.log('after selectAll', currentPos)
+//         let posData;
+//         posData = data.filter(d => d.Pos === currentPos);
+//         drawBar(posData, currentPos, currentStat, currentYear);
+//       });
+//   });
+// };
 
 //pass year from radio button to select avg stats for year
 // loadData().then(data => {
@@ -29726,21 +29825,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
-const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#scatter');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
+// const svg = select('#scatter');
+// const width = +svg.attr('width');
+// const height = +svg.attr('height');
+// export const drawScatter = (data, pos, stat, year, columns) => {
+const drawScatter = (selection, props) => {
+  const {
+    circleRadius,
+    xValue,
+    xAxisLabel,
+    yValue,
+    yAxisLabel,
+    margin,
+    widthSc,
+    heightSc,
+    data,
+  } = props;
 
-const drawScatter = (data, pos, stat, year, columns) => {
- 
-  const margin = {top: 80, right: 20, bottom: 20, left: 125};
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
-  const circleRadius = 5;
-
-  const xValue = d => d[columns];
-  const xAxisLabel = 'Games Started'
-  const yValue = d => d.PTS;
-  const yAxisLabel = 'Points'
+  const innerWidth = widthSc - margin.left - margin.right;
+  const innerHeight = heightSc - margin.top - margin.bottom;
 
   const xScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
     .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, xValue))
@@ -29749,54 +29852,80 @@ const drawScatter = (data, pos, stat, year, columns) => {
 
   const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
     .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, yValue))
-    .range([0, innerHeight])
+    .range([innerHeight, 0])
     .nice();
 
-  const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`)
+  //selecting a class to be more specific instead of all 'g' because there are nested group elements
+  const g = selection.selectAll('.chart-container').data([null]);
+  const gEnter = g.enter().append('g')
+    .attr('class', 'chart-container');
+
+  gEnter.merge(g)
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
   const yAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale)
     .tickSize(-innerWidth)
-    .tickPadding(5)
+    .tickPadding(10);
 
-  const yAxisG = g.append('g').call(yAxis)
-  yAxisG.selectAll('.domain').remove();
+  //there is going to be two group elements, y and x so we should give them a class for specificity
+  //bc we're appending groups elements to parent group, we need to capture the nested version of the update pattern. (the enter selection)
+  const yAxisG = g.select('.y-axis');
+  const yAxisGEnter = gEnter
+    .append('g').attr('class', 'y-axis');
 
-  yAxisG.append('text')
-    .attr('y', -50)
-    .attr('x', - innerHeight / 2)
-    .attr('fill', 'black')
-    .attr('transform', `rotate(-90)`)
-    .attr('text-anchor', 'middle')
-    .text(yAxisLabel)
+  yAxisG
+    .merge(yAxisGEnter)
+      .call(yAxis)
+      .selectAll('.domain').remove();
+
+  const yAxisLabelText = yAxisGEnter
+    .append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -50)
+      .attr('fill', 'black')
+      .attr('transform', `rotate(-90)`)
+      .attr('text-anchor', 'middle')
+    .merge(yAxisG.select('.axis-label'))
+      .attr('x', - innerHeight / 2)
+      .text(yAxisLabel);
       
   const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale)
     .tickSize(-innerHeight)
-    .tickPadding(5)
+    .tickPadding(10);
 
-  const xAxisG = g.append('g').call(xAxis)
-  xAxisG.selectAll('.domain').remove();
+  const xAxisG = g.select('.x-axis')
+  const xAxisGEnter = gEnter
+    .append('g').attr('class', 'x-axis');
+  xAxisG
+    .merge(xAxisGEnter)
+      .call(xAxis)
+      .selectAll('.domain').remove();
 
-  xAxisG.append('text')
-    .attr('y', -30)
-    .attr('x', innerWidth / 2)
-    .attr('fill', 'black')
-    .text(xAxisLabel)
+  const xAxisLabelText = xAxisGEnter
+    .append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -30)
+      .attr('fill', 'black')
+    .merge(xAxisG.select('.axis-label'))
+      .attr('x', innerWidth / 2)
+      .text(xAxisLabel);
   
-  g.selectAll('circle')
-    .data(data)
+  const circles = g.merge(gEnter)
+    .selectAll('circle').data(data);
+
+  circles
     .enter()
     .append('circle')
+      .attr('cx', innerWidth / 2) //during enter selection, we give x and y cooridates to determine where the circles enters from. in this case the center
+      .attr('cy', innerHeight / 2)
+      .attr('r', 0)
+    .merge(circles)
+      .transition()
+      .duration(1000)
+      .delay((d, i) => i * 10) //d is data point, i is index. //i * # is delay of each point transitioning
       .attr('cy', d => yScale(yValue(d)))
       .attr('cx', d => xScale(xValue(d)))
-      .attr('r', circleRadius)
-
-  g.append('text')
-    .attr('class', 'title')
-    .attr('y', -50)
-    .attr('x', innerWidth / 4)
-    .text('Top players per position')
-
+      .attr('r', circleRadius);
 
 };
 

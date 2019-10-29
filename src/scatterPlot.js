@@ -8,21 +8,25 @@ import {
 }
 from 'd3';
 
-const svg = select('#scatter');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
+// const svg = select('#scatter');
+// const width = +svg.attr('width');
+// const height = +svg.attr('height');
+// export const drawScatter = (data, pos, stat, year, columns) => {
+export const drawScatter = (selection, props) => {
+  const {
+    circleRadius,
+    xValue,
+    xAxisLabel,
+    yValue,
+    yAxisLabel,
+    margin,
+    widthSc,
+    heightSc,
+    data,
+  } = props;
 
-export const drawScatter = (data, pos, stat, year, columns) => {
- 
-  const margin = {top: 80, right: 20, bottom: 20, left: 125};
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
-  const circleRadius = 5;
-
-  const xValue = d => d[columns];
-  const xAxisLabel = 'Games Started'
-  const yValue = d => d.PTS;
-  const yAxisLabel = 'Points'
+  const innerWidth = widthSc - margin.left - margin.right;
+  const innerHeight = heightSc - margin.top - margin.bottom;
 
   const xScale = scaleLinear()
     .domain(extent(data, xValue))
@@ -31,53 +35,79 @@ export const drawScatter = (data, pos, stat, year, columns) => {
 
   const yScale = scaleLinear()
     .domain(extent(data, yValue))
-    .range([0, innerHeight])
+    .range([innerHeight, 0])
     .nice();
 
-  const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`)
+  //selecting a class to be more specific instead of all 'g' because there are nested group elements
+  const g = selection.selectAll('.chart-container').data([null]);
+  const gEnter = g.enter().append('g')
+    .attr('class', 'chart-container');
+
+  gEnter.merge(g)
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
   const yAxis = axisLeft(yScale)
     .tickSize(-innerWidth)
-    .tickPadding(5)
+    .tickPadding(10);
 
-  const yAxisG = g.append('g').call(yAxis)
-  yAxisG.selectAll('.domain').remove();
+  //there is going to be two group elements, y and x so we should give them a class for specificity
+  //bc we're appending groups elements to parent group, we need to capture the nested version of the update pattern. (the enter selection)
+  const yAxisG = g.select('.y-axis');
+  const yAxisGEnter = gEnter
+    .append('g').attr('class', 'y-axis');
 
-  yAxisG.append('text')
-    .attr('y', -50)
-    .attr('x', - innerHeight / 2)
-    .attr('fill', 'black')
-    .attr('transform', `rotate(-90)`)
-    .attr('text-anchor', 'middle')
-    .text(yAxisLabel)
+  yAxisG
+    .merge(yAxisGEnter)
+      .call(yAxis)
+      .selectAll('.domain').remove();
+
+  const yAxisLabelText = yAxisGEnter
+    .append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -50)
+      .attr('fill', 'black')
+      .attr('transform', `rotate(-90)`)
+      .attr('text-anchor', 'middle')
+    .merge(yAxisG.select('.axis-label'))
+      .attr('x', - innerHeight / 2)
+      .text(yAxisLabel);
       
   const xAxis = axisTop(xScale)
     .tickSize(-innerHeight)
-    .tickPadding(5)
+    .tickPadding(10);
 
-  const xAxisG = g.append('g').call(xAxis)
-  xAxisG.selectAll('.domain').remove();
+  const xAxisG = g.select('.x-axis')
+  const xAxisGEnter = gEnter
+    .append('g').attr('class', 'x-axis');
+  xAxisG
+    .merge(xAxisGEnter)
+      .call(xAxis)
+      .selectAll('.domain').remove();
 
-  xAxisG.append('text')
-    .attr('y', -30)
-    .attr('x', innerWidth / 2)
-    .attr('fill', 'black')
-    .text(xAxisLabel)
+  const xAxisLabelText = xAxisGEnter
+    .append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -30)
+      .attr('fill', 'black')
+    .merge(xAxisG.select('.axis-label'))
+      .attr('x', innerWidth / 2)
+      .text(xAxisLabel);
   
-  g.selectAll('circle')
-    .data(data)
+  const circles = g.merge(gEnter)
+    .selectAll('circle').data(data);
+
+  circles
     .enter()
     .append('circle')
+      .attr('cx', innerWidth / 2) //during enter selection, we give x and y cooridates to determine where the circles enters from. in this case the center
+      .attr('cy', innerHeight / 2)
+      .attr('r', 0)
+    .merge(circles)
+      .transition()
+      .duration(1000)
+      .delay((d, i) => i * 10) //d is data point, i is index. //i * # is delay of each point transitioning
       .attr('cy', d => yScale(yValue(d)))
       .attr('cx', d => xScale(xValue(d)))
-      .attr('r', circleRadius)
-
-  g.append('text')
-    .attr('class', 'title')
-    .attr('y', -50)
-    .attr('x', innerWidth / 4)
-    .text('Top players per position')
-
+      .attr('r', circleRadius);
 
 };

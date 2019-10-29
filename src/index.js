@@ -15,57 +15,123 @@ import {
   handleScatterPos
  } from './eventHandlers';
 
-//selecting svg on html
-const svg = select('#bar');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
+const svgB = select('#bar');
+const svgSc = select('#scatter');
+const widthB = +svgB.attr('width');
+const heightB = +svgB.attr('height');
+const widthSc = +svgSc.attr('width');
+const heightSc = +svgSc.attr('height');
+
+let yearsArr = [2017, 2018, 2019];
+let columns = ['GS', 'MP', 'ThreePointers', 'TRB', 'AST', 'STL', 'BLK', 'PTS', 'TOV'];
+let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
+let xColumn;
+let yColumn;
+let pos;
 
 loadData().then(data => {
-  let yearsArr = [2017, 2018, 2019];
-  let currentYear = yearsArr[0];
-  let currentPos = d3.select('input[name="pos"]').attr('value');
-  let currentStat = d3.select('input[name="stat"]').attr('value');
-  let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-  let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
+  xColumn = columns[0];
+  yColumn = columns[1];
+  // drawBar(data, currentPos, currentStat, currentYear);
+  // drawScatter(data, currentPos, currentStat, currentYear, columns);
 
-  drawBar(data, currentPos, currentStat, currentYear);
-  drawScatter(data, currentPos, currentStat, currentYear, columns);
-  //const title = 'Top Players Per Position'
-  let xColumn;
-  let selectedYear;
-  let pos;
-
-  const xColumnClicked = (column, year, position) => {
+  const xColumnClicked = (column) => {
     xColumn = column;
-    selectedYear = year;
-    pos = position;
-    drawScatter(data, pos, currentStat, selectedYear, column);
+    svgSc.call(drawScatter, {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data,
+    });
   };
 
-  select('#nav')
+  const yColumnClicked = (column) => {
+    yColumn = column;
+
+    svgSc.call(drawScatter, {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data,
+    });
+  };
+
+  const selectedYear = (year) => {
+
+    svgSc.call(drawScatter, {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data: data.filter(d => d.Year === parseInt(year))
+    });
+  };
+
+  const selectedPos = (pos) => {
+
+    svgSc.call(drawScatter, {
+      circleRadius: 5,
+      xValue: d => d[xColumn],
+      xAxisLabel: xColumn,
+      yValue: d => d[yColumn],
+      yAxisLabel: yColumn,
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthSc,
+      heightSc,
+      data: data.filter(d => d[pos])
+    });
+  };
+
+  select('#x-menu')
     .call(handleScatterStat, {
       options: columns,
-      onOptionClicked: xColumnClicked
+      onOptionClicked: xColumnClicked,
+      selectedOption: xColumn
+    });
+  
+  select('#y-menu')
+    .call(handleScatterStat, {
+      options: columns,
+      onOptionClicked: yColumnClicked,
+      selectedOption: yColumn
     });
 
   select('#year')
     .call(handleScatterYear, {
       options: yearsArr,
-      onOptionClicked: xColumnClicked
+      onOptionClicked: selectedYear
     });
 
   select('#pos')
     .call(handleScatterPos, {
       options: positions,
-      onOptionClicked: xColumnClicked
+      onOptionClicked: selectedPos
     });
+
+  svgSc.call(drawScatter, {
+    circleRadius: 5,
+    xValue: d => d[xColumn],
+    xAxisLabel: xColumn,
+    yValue: d => d[yColumn],
+    yAxisLabel: yColumn,
+    margin: { top: 80, right: 20, bottom: 20, left: 125 },
+    widthSc,
+    heightSc,
+    data,
+  });
+
 });
-
-document.getElementById('year')
-  .addEventListener('input', handleYearChange);
-
-document.getElementById('position')
-  .addEventListener('change', handlePosChange);
-
-document.getElementById('stats')
-  .addEventListener('change', handleStatChange);
