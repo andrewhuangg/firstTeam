@@ -41,7 +41,7 @@ export const loadData = () =>
           if (a.STL >= b.STL) return -1;
           if (a.STL < b.STL) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
       let sgData = data
         .filter(player => player.Pos === 'SG' && player.GS > 30)
@@ -57,7 +57,7 @@ export const loadData = () =>
           if (a.TRB >= b.TRB) return -1;
           if (a.TRB < b.TRB) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
 
       let sfData = data
@@ -76,7 +76,7 @@ export const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
 
       let pfData = data
@@ -99,7 +99,7 @@ export const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
       let cData = data
         .filter(player => player.Pos === 'C' && player.GS > 30)
@@ -119,7 +119,7 @@ export const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
       //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);

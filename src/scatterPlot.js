@@ -36,6 +36,7 @@ export const drawScatter = (selection, props) => {
     .nice();
 
     console.log(data)
+  console.log(yAxisLabel)
     console.log(pos, year)
   const yScale = scaleLinear()
     .domain(extent(data, yValue))

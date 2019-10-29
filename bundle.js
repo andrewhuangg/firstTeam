@@ -29423,10 +29423,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
 /* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
 /* harmony import */ var _scatterPlot__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scatterPlot */ "./src/scatterPlot.js");
-/* harmony import */ var _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./oldeventHandlers */ "./src/oldeventHandlers.js");
-/* harmony import */ var _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
-
+/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
 
 
 
@@ -29445,9 +29442,10 @@ let columns = ['GS', 'MP', 'ThreePointers', 'TRB', 'AST', 'STL', 'BLK', 'PTS', '
 let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
 let xColumn;
 let yColumn;
-let pos;
-let year;
+let cpos = positions[0];
+let cyear = yearsArr[0];
 let circleRadius = 8;
+
 
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   // drawBar(data, currentPos, currentStat, currentYear);
@@ -29467,7 +29465,8 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       heightSc,
       pos,
       year,
-      data,
+      data: data.filter(d => d.Year === parseInt(cyear))
+        .filter(d => d.Pos === cpos)
     });
   };
 
@@ -29485,12 +29484,13 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       heightSc,
       pos,
       year,
-      data,
+      data: data.filter(d => d.Year === parseInt(cyear))
+        .filter(d => d.Pos === cpos)
     });
   };
 
   const selectedYear = (year) => {
-
+    cyear = year;
     svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
       circleRadius: 5,
       xValue: d => d[xColumn],
@@ -29502,12 +29502,13 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       heightSc,
       pos,
       year,
-      data: data.filter(d => d.Year === parseInt(year))
+      data: data.filter(d => d.Year === parseInt(cyear))
+        .filter(d => d.Pos === cpos)
     });
   };
 
   const selectedPos = (pos) => {
-
+    cpos = pos;
     svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
       circleRadius: circleRadius,
       xValue: d => d[xColumn],
@@ -29519,32 +29520,33 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       heightSc,
       pos,
       year,
-      data: data.filter(d => d.Pos === pos)
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear))
     });
   };
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#x-menu')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterStat"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterStat"], {
       options: columns,
       onOptionClicked: xColumnClicked,
       selectedOption: xColumn
     });
   
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#y-menu')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterStat"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterStat"], {
       options: columns,
       onOptionClicked: yColumnClicked,
       selectedOption: yColumn
     });
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#year')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterYear"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterYear"], {
       options: yearsArr,
       onOptionClicked: selectedYear
     });
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#pos')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterPos"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterPos"], {
       options: positions,
       onOptionClicked: selectedPos
     });
@@ -29618,7 +29620,7 @@ const loadData = () =>
           if (a.STL >= b.STL) return -1;
           if (a.STL < b.STL) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
       let sgData = data
         .filter(player => player.Pos === 'SG' && player.GS > 30)
@@ -29634,7 +29636,7 @@ const loadData = () =>
           if (a.TRB >= b.TRB) return -1;
           if (a.TRB < b.TRB) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
 
       let sfData = data
@@ -29653,7 +29655,7 @@ const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
 
       let pfData = data
@@ -29676,7 +29678,7 @@ const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
       let cData = data
         .filter(player => player.Pos === 'C' && player.GS > 30)
@@ -29696,132 +29698,13 @@ const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 20);
+        .slice(0, 50);
 
       //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);
 
       return newData;
     });
-
-/***/ }),
-
-/***/ "./src/oldeventHandlers.js":
-/*!*********************************!*\
-  !*** ./src/oldeventHandlers.js ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-// import {
-//   select
-// } from 'd3';
-// import { loadData } from './loadData';
-// import { drawBar } from './bar';
-
-// const svg = select('#bar');
-// const width = +svg.attr('width');
-// const height = +svg.attr('height');
-
-// export const handleYearChange = (e) => {
-//   d3.selectAll('svg > *').remove();
-//   console.log('changing year')
-//   loadData().then(data => {
-//     let yearsArr = [2017, 2018, 2019];
-//     let currentYear = yearsArr[0];
-//     let currentPos = d3.select('input[name="pos"]').attr('value');
-//     let currentStat = d3.select('input[name="stat"]').attr('value');
-//     let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-
-//     d3.select('#year')
-//       .property('min', currentYear)
-//       .property('max', yearsArr[2])
-//       .property('value', currentYear)
-//       .on('input', () => {
-//         currentYear = +d3.event.target.value;
-//         data = data.filter(d => d.Year === currentYear);
-//         drawBar(data, currentPos, currentStat, currentYear);
-//       });
-//   });
-// };
-
-// export const handleStatChange = (e) => {
-//   d3.selectAll('svg > *').remove();
-//   console.log('changingStat')
-//   loadData().then(data => {
-//     let yearsArr = [2017, 2018, 2019];
-//     let currentYear = yearsArr[0];
-//     let currentPos = d3.select('input[name="pos"]').attr('value');
-//     let currentStat = d3.select('input[name="stat"]').attr('value');
-//     let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-
-//     d3.selectAll('input[name="stat"]')
-//       .on("change", () => {
-//         currentStat = d3.event.target.value;
-//         drawBar(data, currentPos, currentStat, currentYear);
-//       });
-//   });
-// };
-
-// export const handlePosChange = (e) => {
-//   d3.selectAll('svg > *').remove();
-//   console.log('changingPos')
-//   loadData().then(data => {
-//     let yearsArr = [2017, 2018, 2019];
-//     let currentYear = yearsArr[0];
-//     let currentPos = d3.select('input[name="pos"]').attr('value');
-//     let currentStat = d3.select('input[name="stat"]').attr('value');
-//     let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-
-//     console.log('before selectAll', currentPos)
-//     d3.selectAll('input[name="pos"]') //option
-//       .on("change", () => {
-//         letcurrentPos = d3.event.target.value;
-//         console.log('after selectAll', currentPos)
-//         let posData;
-//         posData = data.filter(d => d.Pos === currentPos);
-//         drawBar(posData, currentPos, currentStat, currentYear);
-//       });
-//   });
-// };
-
-//pass year from radio button to select avg stats for year
-// loadData().then(data => {
-//   let yearsArr = [2017, 2018, 2019];
-//   let currentYear = yearsArr[0];
-//   let currentPos = d3.select('input[name="pos"]:checked').attr('value');
-//   let currentStat = d3.select('input[name="stat"]:checked').attr('value');
-
-//   drawBar(data, currentPos, currentStat, currentYear);
-  // d3.select('#year')
-  //   .property('min', currentYear)
-  //   .property('max', yearsArr[2])
-  //   .property('value', currentYear)
-  //   .on('input', () => {
-  //     currentYear = +d3.event.target.value;
-  //     data = data.filter(d => d.Year === currentYear);
-  //     drawBar(data, currentPos, currentStat, currentYear);
-  //   });
-
-  // pass pos, stat, year data to drawbar function
-  // we might need to change data to only pass in data for certain positions // stats as well
-  // d3.selectAll('input[name="pos"]')
-  //   .on("change", () => {
-  //     currentPos = d3.event.target.value;
-  //     let posData;
-  //     posData = data.filter(d => d.Pos === currentPos);
-  //     drawBar(posData, currentPos, currentStat, currentYear);
-  //     console.log(posData)
-  //   });
-
-  // d3.selectAll('input[name="stat"]')
-  //   .on("change", () => {
-  //     currentStat = d3.event.target.value;
-  //     drawBar(data, currentPos, currentStat, currentYear);
-  //   });
-
-// });
-
 
 /***/ }),
 
@@ -29866,6 +29749,7 @@ const drawScatter = (selection, props) => {
     .nice();
 
     console.log(data)
+  console.log(yAxisLabel)
     console.log(pos, year)
   const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
     .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, yValue))

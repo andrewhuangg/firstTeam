@@ -5,11 +5,6 @@ import { loadData } from './loadData';
 import { drawBar } from './bar';
 import { drawScatter } from './scatterPlot';
 import { 
-  handleYearChange, 
-  handleStatChange, 
-  handlePosChange 
-} from './oldeventHandlers';
-import { 
   handleScatterStat,
   handleScatterYear,
   handleScatterPos
@@ -27,9 +22,10 @@ let columns = ['GS', 'MP', 'ThreePointers', 'TRB', 'AST', 'STL', 'BLK', 'PTS', '
 let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
 let xColumn;
 let yColumn;
-let pos;
-let year;
+let cpos = positions[0];
+let cyear = yearsArr[0];
 let circleRadius = 8;
+
 
 loadData().then(data => {
   // drawBar(data, currentPos, currentStat, currentYear);
@@ -49,7 +45,8 @@ loadData().then(data => {
       heightSc,
       pos,
       year,
-      data,
+      data: data.filter(d => d.Year === parseInt(cyear))
+        .filter(d => d.Pos === cpos)
     });
   };
 
@@ -67,12 +64,13 @@ loadData().then(data => {
       heightSc,
       pos,
       year,
-      data,
+      data: data.filter(d => d.Year === parseInt(cyear))
+        .filter(d => d.Pos === cpos)
     });
   };
 
   const selectedYear = (year) => {
-
+    cyear = year;
     svgSc.call(drawScatter, {
       circleRadius: 5,
       xValue: d => d[xColumn],
@@ -84,12 +82,13 @@ loadData().then(data => {
       heightSc,
       pos,
       year,
-      data: data.filter(d => d.Year === parseInt(year))
+      data: data.filter(d => d.Year === parseInt(cyear))
+        .filter(d => d.Pos === cpos)
     });
   };
 
   const selectedPos = (pos) => {
-
+    cpos = pos;
     svgSc.call(drawScatter, {
       circleRadius: circleRadius,
       xValue: d => d[xColumn],
@@ -101,7 +100,8 @@ loadData().then(data => {
       heightSc,
       pos,
       year,
-      data: data.filter(d => d.Pos === pos)
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear))
     });
   };
 
