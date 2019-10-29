@@ -123,7 +123,6 @@ export const loadData = () =>
 
       //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);
-      
-      console.log(data.columns)
+
       return newData;
     });

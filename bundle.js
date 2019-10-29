@@ -29302,18 +29302,19 @@ const drawBar = (data, pos, stat, year) => {
 
 /***/ }),
 
-/***/ "./src/dropdownMenu.js":
-/*!*****************************!*\
-  !*** ./src/dropdownMenu.js ***!
-  \*****************************/
-/*! exports provided: dropdownMenu */
+/***/ "./src/eventHandlers.js":
+/*!******************************!*\
+  !*** ./src/eventHandlers.js ***!
+  \******************************/
+/*! exports provided: handleScatterStat, handleScatterYear, handleScatterPos */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dropdownMenu", function() { return dropdownMenu; });
-
-const dropdownMenu = (selection, props) => {
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleScatterStat", function() { return handleScatterStat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleScatterYear", function() { return handleScatterYear; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleScatterPos", function() { return handleScatterPos; });
+const handleScatterStat = (selection, props) => {
   const { 
     options,
     onOptionClicked
@@ -29329,132 +29330,43 @@ const dropdownMenu = (selection, props) => {
   option.enter().append('option').merge(option)
     .attr('value', d => d)
     .text(d => d);
-}
-
-/***/ }),
-
-/***/ "./src/eventHandlers.js":
-/*!******************************!*\
-  !*** ./src/eventHandlers.js ***!
-  \******************************/
-/*! exports provided: handleYearChange, handleStatChange, handlePosChange */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleYearChange", function() { return handleYearChange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleStatChange", function() { return handleStatChange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handlePosChange", function() { return handlePosChange; });
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
-/* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
-
-
-
-
-const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
-
-const handleYearChange = (e) => {
-  d3.selectAll('svg > *').remove();
-  console.log('changing year')
-  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-    let yearsArr = [2017, 2018, 2019];
-    let currentYear = yearsArr[0];
-    let currentPos = d3.select('input[name="pos"]').attr('value');
-    let currentStat = d3.select('input[name="stat"]').attr('value');
-    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
-
-    d3.select('#year')
-      .property('min', currentYear)
-      .property('max', yearsArr[2])
-      .property('value', currentYear)
-      .on('input', () => {
-        currentYear = +d3.event.target.value;
-        data = data.filter(d => d.Year === currentYear);
-        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-      });
-  });
 };
 
-const handleStatChange = (e) => {
-  d3.selectAll('svg > *').remove();
-  console.log('changingStat')
-  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-    let yearsArr = [2017, 2018, 2019];
-    let currentYear = yearsArr[0];
-    let currentPos = d3.select('input[name="pos"]').attr('value');
-    let currentStat = d3.select('input[name="stat"]').attr('value');
-    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+const handleScatterYear = (selection, props) => {
+  const {
+    options,
+    onOptionClicked
+  } = props;
 
-    d3.selectAll('input[name="stat"]')
-      .on("change", () => {
-        currentStat = d3.event.target.value;
-        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
-      });
-  });
+  let select = selection.selectAll('select').data([null]);
+  select = select.enter().append('select').merge(select)
+    .on('change', function () {
+      onOptionClicked(this.value)
+    });
+
+  const option = select.selectAll('option').data(options)
+  option.enter().append('option').merge(option)
+    .attr('value', d => d)
+    .text(d => d);
 };
 
-const handlePosChange = (e) => {
-  d3.selectAll('svg > *').remove();
-  console.log('changingPos')
-  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-    let yearsArr = [2017, 2018, 2019];
-    let currentYear = yearsArr[0];
-    let currentPos = d3.select('input[name="pos"]').attr('value');
-    let currentStat = d3.select('input[name="stat"]').attr('value');
-    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+const handleScatterPos = (selection, props) => {
+  const {
+    options,
+    onOptionClicked
+  } = props;
 
-    console.log('before selectAll', currentPos)
-    d3.selectAll('input[name="pos"]') //option
-      .on("change", () => {
-        letcurrentPos = d3.event.target.value;
-        console.log('after selectAll', currentPos)
-        let posData;
-        posData = data.filter(d => d.Pos === currentPos);
-        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(posData, currentPos, currentStat, currentYear);
-      });
-  });
+  let select = selection.selectAll('select').data([null]);
+  select = select.enter().append('select').merge(select)
+    .on('change', function () {
+      onOptionClicked(this.value)
+    });
+
+  const option = select.selectAll('option').data(options)
+  option.enter().append('option').merge(option)
+    .attr('value', d => d)
+    .text(d => d);
 };
-
-//pass year from radio button to select avg stats for year
-// loadData().then(data => {
-//   let yearsArr = [2017, 2018, 2019];
-//   let currentYear = yearsArr[0];
-//   let currentPos = d3.select('input[name="pos"]:checked').attr('value');
-//   let currentStat = d3.select('input[name="stat"]:checked').attr('value');
-
-//   drawBar(data, currentPos, currentStat, currentYear);
-  // d3.select('#year')
-  //   .property('min', currentYear)
-  //   .property('max', yearsArr[2])
-  //   .property('value', currentYear)
-  //   .on('input', () => {
-  //     currentYear = +d3.event.target.value;
-  //     data = data.filter(d => d.Year === currentYear);
-  //     drawBar(data, currentPos, currentStat, currentYear);
-  //   });
-
-  // pass pos, stat, year data to drawbar function
-  // we might need to change data to only pass in data for certain positions // stats as well
-  // d3.selectAll('input[name="pos"]')
-  //   .on("change", () => {
-  //     currentPos = d3.event.target.value;
-  //     let posData;
-  //     posData = data.filter(d => d.Pos === currentPos);
-  //     drawBar(posData, currentPos, currentStat, currentYear);
-  //     console.log(posData)
-  //   });
-
-  // d3.selectAll('input[name="stat"]')
-  //   .on("change", () => {
-  //     currentStat = d3.event.target.value;
-  //     drawBar(data, currentPos, currentStat, currentYear);
-  //   });
-
-// });
-
 
 /***/ }),
 
@@ -29471,7 +29383,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
 /* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
 /* harmony import */ var _scatterPlot__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scatterPlot */ "./src/scatterPlot.js");
-/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
+/* harmony import */ var _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./oldeventHandlers */ "./src/oldeventHandlers.js");
+/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
+
 
 
 
@@ -29486,23 +29400,52 @@ const height = +svg.attr('height');
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   let yearsArr = [2017, 2018, 2019];
   let currentYear = yearsArr[0];
-  // let currentPos = d3.select('input[name="pos"]').attr('value');
   let currentPos = d3.select('input[name="pos"]').attr('value');
   let currentStat = d3.select('input[name="stat"]').attr('value');
   let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+  let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
 
   Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
   Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, currentPos, currentStat, currentYear, columns);
+  //const title = 'Top Players Per Position'
+  let xColumn;
+  let selectedYear;
+  let pos;
+
+  const xColumnClicked = (column, year, position) => {
+    xColumn = column;
+    selectedYear = year;
+    pos = position;
+    Object(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"])(data, pos, currentStat, selectedYear, column);
+  };
+
+  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#nav')
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterStat"], {
+      options: columns,
+      onOptionClicked: xColumnClicked
+    });
+
+  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#year')
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterYear"], {
+      options: yearsArr,
+      onOptionClicked: xColumnClicked
+    });
+
+  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#pos')
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterPos"], {
+      options: positions,
+      onOptionClicked: xColumnClicked
+    });
 });
 
 document.getElementById('year')
-  .addEventListener('input', _eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleYearChange"]);
+  .addEventListener('input', _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleYearChange"]);
 
 document.getElementById('position')
-  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handlePosChange"]);
+  .addEventListener('change', _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__["handlePosChange"]);
 
 document.getElementById('stats')
-  .addEventListener('change', _eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleStatChange"]);
+  .addEventListener('change', _oldeventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleStatChange"]);
 
 
 /***/ }),
@@ -29639,10 +29582,134 @@ const loadData = () =>
 
       //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);
-      
-      console.log(data.columns)
+
       return newData;
     });
+
+/***/ }),
+
+/***/ "./src/oldeventHandlers.js":
+/*!*********************************!*\
+  !*** ./src/oldeventHandlers.js ***!
+  \*********************************/
+/*! exports provided: handleYearChange, handleStatChange, handlePosChange */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleYearChange", function() { return handleYearChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleStatChange", function() { return handleStatChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handlePosChange", function() { return handlePosChange; });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
+/* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
+
+
+
+
+const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
+const width = +svg.attr('width');
+const height = +svg.attr('height');
+
+const handleYearChange = (e) => {
+  d3.selectAll('svg > *').remove();
+  console.log('changing year')
+  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
+    let yearsArr = [2017, 2018, 2019];
+    let currentYear = yearsArr[0];
+    let currentPos = d3.select('input[name="pos"]').attr('value');
+    let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+
+    d3.select('#year')
+      .property('min', currentYear)
+      .property('max', yearsArr[2])
+      .property('value', currentYear)
+      .on('input', () => {
+        currentYear = +d3.event.target.value;
+        data = data.filter(d => d.Year === currentYear);
+        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+      });
+  });
+};
+
+const handleStatChange = (e) => {
+  d3.selectAll('svg > *').remove();
+  console.log('changingStat')
+  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
+    let yearsArr = [2017, 2018, 2019];
+    let currentYear = yearsArr[0];
+    let currentPos = d3.select('input[name="pos"]').attr('value');
+    let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+
+    d3.selectAll('input[name="stat"]')
+      .on("change", () => {
+        currentStat = d3.event.target.value;
+        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(data, currentPos, currentStat, currentYear);
+      });
+  });
+};
+
+const handlePosChange = (e) => {
+  d3.selectAll('svg > *').remove();
+  console.log('changingPos')
+  Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
+    let yearsArr = [2017, 2018, 2019];
+    let currentYear = yearsArr[0];
+    let currentPos = d3.select('input[name="pos"]').attr('value');
+    let currentStat = d3.select('input[name="stat"]').attr('value');
+    let columns = ['Player', 'Pos', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGpct', 'ThreePointers', 'ThreePointPct', 'TwoPointPct', 'eFGpct', 'FT', 'FTpct', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PTS', 'Year'];
+
+    console.log('before selectAll', currentPos)
+    d3.selectAll('input[name="pos"]') //option
+      .on("change", () => {
+        letcurrentPos = d3.event.target.value;
+        console.log('after selectAll', currentPos)
+        let posData;
+        posData = data.filter(d => d.Pos === currentPos);
+        Object(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"])(posData, currentPos, currentStat, currentYear);
+      });
+  });
+};
+
+//pass year from radio button to select avg stats for year
+// loadData().then(data => {
+//   let yearsArr = [2017, 2018, 2019];
+//   let currentYear = yearsArr[0];
+//   let currentPos = d3.select('input[name="pos"]:checked').attr('value');
+//   let currentStat = d3.select('input[name="stat"]:checked').attr('value');
+
+//   drawBar(data, currentPos, currentStat, currentYear);
+  // d3.select('#year')
+  //   .property('min', currentYear)
+  //   .property('max', yearsArr[2])
+  //   .property('value', currentYear)
+  //   .on('input', () => {
+  //     currentYear = +d3.event.target.value;
+  //     data = data.filter(d => d.Year === currentYear);
+  //     drawBar(data, currentPos, currentStat, currentYear);
+  //   });
+
+  // pass pos, stat, year data to drawbar function
+  // we might need to change data to only pass in data for certain positions // stats as well
+  // d3.selectAll('input[name="pos"]')
+  //   .on("change", () => {
+  //     currentPos = d3.event.target.value;
+  //     let posData;
+  //     posData = data.filter(d => d.Pos === currentPos);
+  //     drawBar(posData, currentPos, currentStat, currentYear);
+  //     console.log(posData)
+  //   });
+
+  // d3.selectAll('input[name="stat"]')
+  //   .on("change", () => {
+  //     currentStat = d3.event.target.value;
+  //     drawBar(data, currentPos, currentStat, currentYear);
+  //   });
+
+// });
+
 
 /***/ }),
 
@@ -29657,32 +29724,20 @@ const loadData = () =>
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawScatter", function() { return drawScatter; });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var _dropdownMenu__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dropdownMenu */ "./src/dropdownMenu.js");
 
-
-
-//domain = dataspace
-//range = screen space
 
 const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#scatter');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
 const drawScatter = (data, pos, stat, year, columns) => {
-  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#nav')
-    .call(_dropdownMenu__WEBPACK_IMPORTED_MODULE_1__["dropdownMenu"], {
-      options: columns,
-      onOptionClicked: (column) => {
-        console.log(column)
-      }
-    });
-
+ 
   const margin = {top: 80, right: 20, bottom: 20, left: 125};
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const circleRadius = 5;
 
-  const xValue = d => d.GS;
+  const xValue = d => d[columns];
   const xAxisLabel = 'Games Started'
   const yValue = d => d.PTS;
   const yAxisLabel = 'Points'
