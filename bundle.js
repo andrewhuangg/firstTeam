@@ -29241,63 +29241,87 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
-//domain = dataspace
-//range = screen space
+const drawBar = (selection, props) => {
+  const {
+    xValue,
+    yValue,
+    margin,
+    widthB,
+    heightB,
+    data,
+    pos,
+    year,
+    xAxisLabel
+  } = props;
 
-const svg = Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#bar');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
-
-const drawBar = (data, pos, stat, year) => {
-  const margin = {top: 80, right: 20, bottom: 20, left: 125};
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+  const innerWidth = widthB - margin.left - margin.right;
+  const innerHeight = heightB - margin.top - margin.bottom;
 
   const xScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
-    .domain([0, Object(d3__WEBPACK_IMPORTED_MODULE_0__["max"])(data, d => d[stat])]) //0 to max stat
-    .range([0, innerWidth]) //the bars will go as far as the width of the container
+    .domain([0, Object(d3__WEBPACK_IMPORTED_MODULE_0__["max"])(data, xValue)]) 
+    .range([0, innerWidth])
     .nice();
+    
+  const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleBand"])()
+    .domain(data.map(yValue))
+    .range([0, innerHeight])
+    .padding(0.1);
 
-  const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleBand"])() //useful for ordinal attributes - mapping onto a range defined by beginning points of rectangles
-    .domain(data.map(d => d.Player))
-    .range([0, innerHeight]) //range 0 to height will cause data elements to be arranged from top to bottom
-    .padding(0.1)
+  const g = selection.selectAll('.bar-container').data([null]);
+  const gEnter = g.enter().append('g')
+    .attr('class', 'bar-container')
 
-  const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
+  gEnter.merge(g)
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  g.append('g')
-    .call(Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale))//putting yaxis here and grouping all of them
-    .selectAll('.domain, .tick line') //selecting parent domain, and all line elements from the tick class
-      .remove();
+  const yAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale)
+    .tickPadding(10);
+
+  const yAxisG = g.select('.yb-axis');
+  const yAxisGEnter = gEnter
+    .append('g').attr('class', 'yb-axis');
+
+  yAxisG
+    .merge(yAxisGEnter)
+    .call(yAxis)
+      .selectAll('.domain, .tick line').remove();
       
   const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale).tickSize(-innerHeight)
-  const xAxisG = g.append('g').call(xAxis) //group element for xAxis
+
+  const xAxisG = g.select('.xb-axis');
+  const xAxisGEnter = gEnter
+    .append('g').attr('class', 'xb-axis');
 
   xAxisG
-    .selectAll('.domain').remove(); //selecting parent domain and removing them
+    .merge(xAxisGEnter)
+    .call(xAxis)
+    .selectAll('.domain, .tick line').remove();
 
-  xAxisG.append('text')
-    .attr('y', -30) //controls the text on the xaxis .. moving it up and down
-    .attr('x', innerWidth / 2) //center
-    .attr('fill', 'black')
-    .text(`${stat}`)
+  const xAxisLabelText = xAxisGEnter
+    .append('text')
+      .attr('class', 'axisb-label')
+      .attr('y', -30)
+      .attr('fill', 'black')
+    .merge(xAxisG.select('.axisb-label'))
+      .attr('x', innerWidth / 2)
+      .text(xAxisLabel);
   
-  g.selectAll('rect')
-    .data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
-    .enter()
-    .append('rect')
-      .attr('y', d => yScale(d.Player))
-      .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
-      .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
-      .attr('class', 'bar')
+  const rects = g.merge(gEnter)
+    .selectAll('rect').data(data)
+
+  rects.enter().append('rect')
+    .merge(rects)
+      .attr('y', d => yScale(yValue(d)))
+      .attr('width', d => xScale(xValue(d)))
+      .attr('height', yScale.bandwidth())
+      .attr('class', 'bar');
 
   g.append('text')
-    .attr('y', -50) //y coordinate of label..
+    .attr('y', -50)
     .attr('x', innerWidth / 4)
     .text('Top players per position')
 
-
+  rects.exit().remove()
 };
 
 /***/ }),
@@ -29306,7 +29330,7 @@ const drawBar = (data, pos, stat, year) => {
 /*!******************************!*\
   !*** ./src/eventHandlers.js ***!
   \******************************/
-/*! exports provided: handleScatterStat, handleScatterYear, handleScatterPos */
+/*! exports provided: handleScatterStat, handleScatterYear, handleScatterPos, handleBarStat */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -29314,6 +29338,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleScatterStat", function() { return handleScatterStat; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleScatterYear", function() { return handleScatterYear; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleScatterPos", function() { return handleScatterPos; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleBarStat", function() { return handleBarStat; });
 const handleScatterStat = (selection, props) => {
   const { 
     options,
@@ -29332,7 +29357,6 @@ const handleScatterStat = (selection, props) => {
     .attr('value', d => d)
     .property('selected', d => d === selectedOption)
     .text(d => d);
-
 };
 
 const handleScatterYear = (selection, props) => {
@@ -29375,38 +29399,26 @@ const handleScatterPos = (selection, props) => {
     .text(d => d);
 };
 
+const handleBarStat = (selection, props) => {
+  const {
+    options,
+    onOptionClicked,
+    selectedOption
+  } = props;
 
-//attempted to create one massive event handler for DRY code.
-// export const handleScatter = (selection, props) => {
-//   const {
-//     xCol,
-//     years,
-//     pos,
-//     onOptionClicked,
-//     selectedOption
-//   } = props;
+  let select = selection.selectAll('select').data([null]);
+  select = select.enter().append('select').merge(select)
+    .on('change', function () { //using function to preserve the keyword this
+      onOptionClicked(this.value);
+    });
 
-//   let select = selection.selectAll('select').data([null]);
-//   select = select.enter().append('select').merge(select)
-//     .on('change', function () { //using function to preserve the keyword this
-//       onOptionClicked(this.value)
-//     });
+  const option = select.selectAll('option').data(options);
+  option.enter().append('option').merge(option)
+    .attr('value', d => d)
+    .property('selected', d => d === selectedOption)
+    .text(d => d);
+};
 
-//   const xColumn = select.selectAll('option').data(xCol)
-//   xColumn.enter().append('option').merge(xColumn)
-//     .attr('value', d => d)
-//     .text(d => d);
-
-//   const yearSelection = select.selectAll('option').data(years)
-//   yearSelection.enter().append('option').merge(xColumn)
-//     .attr('value', d => d)
-//     .text(d => d);
-
-//   const posSelection = select.selectAll('option').data(pos)
-//   posSelection.enter().append('option').merge(posSelection)
-//     .attr('value', d => d)
-//     .text(d => d);
-// };
 
 /***/ }),
 
@@ -29436,11 +29448,11 @@ const widthB = +svgB.attr('width');
 const heightB = +svgB.attr('height');
 const widthSc = +svgSc.attr('width');
 const heightSc = +svgSc.attr('height');
-
 let yearsArr = [2017, 2018, 2019];
 let columns = ['GS', 'MP', 'ThreePointers', 'TRB', 'AST', 'STL', 'BLK', 'PTS', 'TOV'];
 let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
-let xColumn;
+let xColumn; //scatter
+let xCol; //bar
 let yColumn;
 let cpos = positions[0];
 let cyear = yearsArr[0];
@@ -29448,10 +29460,10 @@ let circleRadius = 8;
 
 
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-  // drawBar(data, currentPos, currentStat, currentYear);
+  xCol = columns[3];
+  xColumn = columns[0];
+  yColumn = columns[1];
 
-  console.log(year, pos)
-  
   const xColumnClicked = (column) => {
     xColumn = column;
     svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
@@ -29525,6 +29537,29 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
     });
   };
 
+  const xBarClicked = (column) => {
+    xCol = column;
+    svgB.call(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"], {
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthB,
+      heightB,
+      xValue: d => d[xCol],
+      yValue: d => d.Player,
+      xAxisLabel: xCol,
+      year,
+      pos,
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear)),
+    });
+  };
+
+  Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#xBar')
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleBarStat"], {
+      options: columns,
+      onOptionClicked: xBarClicked,
+      selectedOption: xCol
+    });
+
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#x-menu')
     .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterStat"], {
       options: columns,
@@ -29551,8 +29586,6 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       onOptionClicked: selectedPos
     });
 
-  xColumn = columns[0];
-  yColumn = columns[1];
   svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
     circleRadius: circleRadius,
     xValue: d => d[xColumn],
@@ -29563,6 +29596,18 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
     widthSc,
     heightSc,
     data
+  });
+  
+  svgB.call(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"], {
+    margin: { top: 80, right: 20, bottom: 20, left: 125 },
+    widthB,
+    heightB,
+    xValue: d => d[xCol],
+    yValue: d => d.Player,
+    xAxisLabel: xCol,
+    data,
+    year,
+    pos
   });
 
 });
@@ -29721,10 +29766,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
-// const svg = select('#scatter');
-// const width = +svg.attr('width');
-// const height = +svg.attr('height');
-// export const drawScatter = (data, pos, stat, year, columns) => {
 const drawScatter = (selection, props) => {
   const {
     circleRadius,
@@ -29737,7 +29778,7 @@ const drawScatter = (selection, props) => {
     heightSc,
     data,
     pos,
-    year, //parseInt this because year is a string from dropdown
+    year,
   } = props;
 
   const innerWidth = widthSc - margin.left - margin.right;
@@ -29748,15 +29789,11 @@ const drawScatter = (selection, props) => {
     .range([0, innerWidth])
     .nice();
 
-    console.log(data)
-  console.log(yAxisLabel)
-    console.log(pos, year)
   const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
     .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, yValue))
     .range([innerHeight, 0])
     .nice();
 
-  //selecting a class to be more specific instead of all 'g' because there are nested group elements
   const g = selection.selectAll('.chart-container').data([null]);
   const gEnter = g.enter().append('g')
     .attr('class', 'chart-container');
@@ -29768,8 +29805,6 @@ const drawScatter = (selection, props) => {
     .tickSize(-innerWidth)
     .tickPadding(10);
 
-  //there is going to be two group elements, y and x so we should give them a class for specificity
-  //bc we're appending groups elements to parent group, we need to capture the nested version of the update pattern. (the enter selection)
   const yAxisG = g.select('.y-axis');
   const yAxisGEnter = gEnter
     .append('g').attr('class', 'y-axis');
@@ -29797,6 +29832,7 @@ const drawScatter = (selection, props) => {
   const xAxisG = g.select('.x-axis')
   const xAxisGEnter = gEnter
     .append('g').attr('class', 'x-axis');
+
   xAxisG
     .merge(xAxisGEnter)
       .call(xAxis)
@@ -29821,10 +29857,8 @@ const drawScatter = (selection, props) => {
     .style("z-index", "10")
     .style("visibility", "hidden")
 
-  circles
-    .enter()
-    .append('circle')
-      .attr('cx', innerWidth / 2) //during enter selection, we give x and y cooridates to determine where the circles enters from. in this case the center
+  circles.enter().append('circle')
+      .attr('cx', innerWidth / 2)
       .attr('cy', innerHeight / 2)
       .attr('r', 0)
       .on("mouseover", () => toolTip.style("visibility", "visible"))
@@ -29833,7 +29867,7 @@ const drawScatter = (selection, props) => {
     .merge(circles)
       .transition()
       .duration(1000)
-      .delay((d, i) => i * 10) //d is data point, i is index. //i * # is delay of each point transitioning
+      .delay((d, i) => i * 10)
       .attr('cy', d => yScale(yValue(d)))
       .attr('cx', d => xScale(xValue(d)))
       .attr('r', circleRadius);

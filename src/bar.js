@@ -8,61 +8,85 @@ import {
 }
 from 'd3';
 
-//domain = dataspace
-//range = screen space
+export const drawBar = (selection, props) => {
+  const {
+    xValue,
+    yValue,
+    margin,
+    widthB,
+    heightB,
+    data,
+    pos,
+    year,
+    xAxisLabel
+  } = props;
 
-const svg = select('#bar');
-const width = +svg.attr('width');
-const height = +svg.attr('height');
-
-export const drawBar = (data, pos, stat, year) => {
-  const margin = {top: 80, right: 20, bottom: 20, left: 125};
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+  const innerWidth = widthB - margin.left - margin.right;
+  const innerHeight = heightB - margin.top - margin.bottom;
 
   const xScale = scaleLinear()
-    .domain([0, max(data, d => d[stat])]) //0 to max stat
-    .range([0, innerWidth]) //the bars will go as far as the width of the container
+    .domain([0, max(data, xValue)]) 
+    .range([0, innerWidth])
     .nice();
+    
+  const yScale = scaleBand()
+    .domain(data.map(yValue))
+    .range([0, innerHeight])
+    .padding(0.1);
 
-  const yScale = scaleBand() //useful for ordinal attributes - mapping onto a range defined by beginning points of rectangles
-    .domain(data.map(d => d.Player))
-    .range([0, innerHeight]) //range 0 to height will cause data elements to be arranged from top to bottom
-    .padding(0.1)
+  const g = selection.selectAll('.bar-container').data([null]);
+  const gEnter = g.enter().append('g')
+    .attr('class', 'bar-container')
 
-  const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
+  gEnter.merge(g)
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  g.append('g')
-    .call(axisLeft(yScale))//putting yaxis here and grouping all of them
-    .selectAll('.domain, .tick line') //selecting parent domain, and all line elements from the tick class
-      .remove();
+  const yAxis = axisLeft(yScale)
+    .tickPadding(10);
+
+  const yAxisG = g.select('.yb-axis');
+  const yAxisGEnter = gEnter
+    .append('g').attr('class', 'yb-axis');
+
+  yAxisG
+    .merge(yAxisGEnter)
+    .call(yAxis)
+      .selectAll('.domain, .tick line').remove();
       
   const xAxis = axisTop(xScale).tickSize(-innerHeight)
-  const xAxisG = g.append('g').call(xAxis) //group element for xAxis
+
+  const xAxisG = g.select('.xb-axis');
+  const xAxisGEnter = gEnter
+    .append('g').attr('class', 'xb-axis');
 
   xAxisG
-    .selectAll('.domain').remove(); //selecting parent domain and removing them
+    .merge(xAxisGEnter)
+    .call(xAxis)
+    .selectAll('.domain, .tick line').remove();
 
-  xAxisG.append('text')
-    .attr('y', -30) //controls the text on the xaxis .. moving it up and down
-    .attr('x', innerWidth / 2) //center
-    .attr('fill', 'black')
-    .text(`${stat}`)
+  const xAxisLabelText = xAxisGEnter
+    .append('text')
+      .attr('class', 'axisb-label')
+      .attr('y', -30)
+      .attr('fill', 'black')
+    .merge(xAxisG.select('.axisb-label'))
+      .attr('x', innerWidth / 2)
+      .text(xAxisLabel);
   
-  g.selectAll('rect')
-    .data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
-    .enter()
-    .append('rect')
-      .attr('y', d => yScale(d.Player))
-      .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
-      .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
-      .attr('class', 'bar')
+  const rects = g.merge(gEnter)
+    .selectAll('rect').data(data)
+
+  rects.enter().append('rect')
+    .merge(rects)
+      .attr('y', d => yScale(yValue(d)))
+      .attr('width', d => xScale(xValue(d)))
+      .attr('height', yScale.bandwidth())
+      .attr('class', 'bar');
 
   g.append('text')
-    .attr('y', -50) //y coordinate of label..
+    .attr('y', -50)
     .attr('x', innerWidth / 4)
     .text('Top players per position')
 
-
+  rects.exit().remove()
 };

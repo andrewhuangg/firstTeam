@@ -7,7 +7,8 @@ import { drawScatter } from './scatterPlot';
 import { 
   handleScatterStat,
   handleScatterYear,
-  handleScatterPos
+  handleScatterPos,
+  handleBarStat,
  } from './eventHandlers';
 
 const svgB = select('#bar');
@@ -16,11 +17,11 @@ const widthB = +svgB.attr('width');
 const heightB = +svgB.attr('height');
 const widthSc = +svgSc.attr('width');
 const heightSc = +svgSc.attr('height');
-
 let yearsArr = [2017, 2018, 2019];
 let columns = ['GS', 'MP', 'ThreePointers', 'TRB', 'AST', 'STL', 'BLK', 'PTS', 'TOV'];
 let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
-let xColumn;
+let xColumn; //scatter
+let xCol; //bar
 let yColumn;
 let cpos = positions[0];
 let cyear = yearsArr[0];
@@ -28,10 +29,10 @@ let circleRadius = 8;
 
 
 loadData().then(data => {
-  // drawBar(data, currentPos, currentStat, currentYear);
+  xCol = columns[3];
+  xColumn = columns[0];
+  yColumn = columns[1];
 
-  console.log(year, pos)
-  
   const xColumnClicked = (column) => {
     xColumn = column;
     svgSc.call(drawScatter, {
@@ -105,6 +106,29 @@ loadData().then(data => {
     });
   };
 
+  const xBarClicked = (column) => {
+    xCol = column;
+    svgB.call(drawBar, {
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthB,
+      heightB,
+      xValue: d => d[xCol],
+      yValue: d => d.Player,
+      xAxisLabel: xCol,
+      year,
+      pos,
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear)),
+    });
+  };
+
+  select('#xBar')
+    .call(handleBarStat, {
+      options: columns,
+      onOptionClicked: xBarClicked,
+      selectedOption: xCol
+    });
+
   select('#x-menu')
     .call(handleScatterStat, {
       options: columns,
@@ -131,8 +155,6 @@ loadData().then(data => {
       onOptionClicked: selectedPos
     });
 
-  xColumn = columns[0];
-  yColumn = columns[1];
   svgSc.call(drawScatter, {
     circleRadius: circleRadius,
     xValue: d => d[xColumn],
@@ -143,6 +165,18 @@ loadData().then(data => {
     widthSc,
     heightSc,
     data
+  });
+  
+  svgB.call(drawBar, {
+    margin: { top: 80, right: 20, bottom: 20, left: 125 },
+    widthB,
+    heightB,
+    xValue: d => d[xCol],
+    yValue: d => d.Player,
+    xAxisLabel: xCol,
+    data,
+    year,
+    pos
   });
 
 });

@@ -8,10 +8,6 @@ import {
 }
 from 'd3';
 
-// const svg = select('#scatter');
-// const width = +svg.attr('width');
-// const height = +svg.attr('height');
-// export const drawScatter = (data, pos, stat, year, columns) => {
 export const drawScatter = (selection, props) => {
   const {
     circleRadius,
@@ -24,7 +20,7 @@ export const drawScatter = (selection, props) => {
     heightSc,
     data,
     pos,
-    year, //parseInt this because year is a string from dropdown
+    year,
   } = props;
 
   const innerWidth = widthSc - margin.left - margin.right;
@@ -35,15 +31,11 @@ export const drawScatter = (selection, props) => {
     .range([0, innerWidth])
     .nice();
 
-    console.log(data)
-  console.log(yAxisLabel)
-    console.log(pos, year)
   const yScale = scaleLinear()
     .domain(extent(data, yValue))
     .range([innerHeight, 0])
     .nice();
 
-  //selecting a class to be more specific instead of all 'g' because there are nested group elements
   const g = selection.selectAll('.chart-container').data([null]);
   const gEnter = g.enter().append('g')
     .attr('class', 'chart-container');
@@ -55,8 +47,6 @@ export const drawScatter = (selection, props) => {
     .tickSize(-innerWidth)
     .tickPadding(10);
 
-  //there is going to be two group elements, y and x so we should give them a class for specificity
-  //bc we're appending groups elements to parent group, we need to capture the nested version of the update pattern. (the enter selection)
   const yAxisG = g.select('.y-axis');
   const yAxisGEnter = gEnter
     .append('g').attr('class', 'y-axis');
@@ -84,6 +74,7 @@ export const drawScatter = (selection, props) => {
   const xAxisG = g.select('.x-axis')
   const xAxisGEnter = gEnter
     .append('g').attr('class', 'x-axis');
+
   xAxisG
     .merge(xAxisGEnter)
       .call(xAxis)
@@ -108,10 +99,8 @@ export const drawScatter = (selection, props) => {
     .style("z-index", "10")
     .style("visibility", "hidden")
 
-  circles
-    .enter()
-    .append('circle')
-      .attr('cx', innerWidth / 2) //during enter selection, we give x and y cooridates to determine where the circles enters from. in this case the center
+  circles.enter().append('circle')
+      .attr('cx', innerWidth / 2)
       .attr('cy', innerHeight / 2)
       .attr('r', 0)
       .on("mouseover", () => toolTip.style("visibility", "visible"))
@@ -120,7 +109,7 @@ export const drawScatter = (selection, props) => {
     .merge(circles)
       .transition()
       .duration(1000)
-      .delay((d, i) => i * 10) //d is data point, i is index. //i * # is delay of each point transitioning
+      .delay((d, i) => i * 10)
       .attr('cy', d => yScale(yValue(d)))
       .attr('cx', d => xScale(xValue(d)))
       .attr('r', circleRadius);
