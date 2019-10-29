@@ -29339,6 +29339,7 @@ const handleScatterYear = (selection, props) => {
   const {
     options,
     onOptionClicked,
+    selectedOption
   } = props;
 
   let select = selection.selectAll('select').data([null]);
@@ -29350,6 +29351,7 @@ const handleScatterYear = (selection, props) => {
   const option = select.selectAll('option').data(options)
   option.enter().append('option').merge(option)
     .attr('value', d => d)
+    .property('selected', d => d === selectedOption)
     .text(d => d);
 };
 
@@ -29444,17 +29446,18 @@ let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
 let xColumn;
 let yColumn;
 let pos;
+let year;
+let circleRadius = 8;
 
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
-  xColumn = columns[0];
-  yColumn = columns[1];
   // drawBar(data, currentPos, currentStat, currentYear);
-  // drawScatter(data, currentPos, currentStat, currentYear, columns);
 
+  console.log(year, pos)
+  
   const xColumnClicked = (column) => {
     xColumn = column;
     svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
-      circleRadius: 5,
+      circleRadius: circleRadius,
       xValue: d => d[xColumn],
       xAxisLabel: xColumn,
       yValue: d => d[yColumn],
@@ -29462,6 +29465,8 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
+      pos,
+      year,
       data,
     });
   };
@@ -29470,7 +29475,7 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
     yColumn = column;
 
     svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
-      circleRadius: 5,
+      circleRadius: circleRadius,
       xValue: d => d[xColumn],
       xAxisLabel: xColumn,
       yValue: d => d[yColumn],
@@ -29478,6 +29483,8 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
+      pos,
+      year,
       data,
     });
   };
@@ -29493,6 +29500,8 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
+      pos,
+      year,
       data: data.filter(d => d.Year === parseInt(year))
     });
   };
@@ -29500,7 +29509,7 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   const selectedPos = (pos) => {
 
     svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
-      circleRadius: 5,
+      circleRadius: circleRadius,
       xValue: d => d[xColumn],
       xAxisLabel: xColumn,
       yValue: d => d[yColumn],
@@ -29508,7 +29517,9 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      data: data.filter(d => d[pos])
+      pos,
+      year,
+      data: data.filter(d => d.Pos === pos)
     });
   };
 
@@ -29538,8 +29549,10 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       onOptionClicked: selectedPos
     });
 
+  xColumn = columns[0];
+  yColumn = columns[1];
   svgSc.call(_scatterPlot__WEBPACK_IMPORTED_MODULE_3__["drawScatter"], {
-    circleRadius: 5,
+    circleRadius: circleRadius,
     xValue: d => d[xColumn],
     xAxisLabel: xColumn,
     yValue: d => d[yColumn],
@@ -29547,7 +29560,7 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
     margin: { top: 80, right: 20, bottom: 20, left: 125 },
     widthSc,
     heightSc,
-    data,
+    data
   });
 
 });
@@ -29840,6 +29853,8 @@ const drawScatter = (selection, props) => {
     widthSc,
     heightSc,
     data,
+    pos,
+    year, //parseInt this because year is a string from dropdown
   } = props;
 
   const innerWidth = widthSc - margin.left - margin.right;
@@ -29850,6 +29865,8 @@ const drawScatter = (selection, props) => {
     .range([0, innerWidth])
     .nice();
 
+    console.log(data)
+    console.log(pos, year)
   const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
     .domain(Object(d3__WEBPACK_IMPORTED_MODULE_0__["extent"])(data, yValue))
     .range([innerHeight, 0])
@@ -29909,9 +29926,16 @@ const drawScatter = (selection, props) => {
     .merge(xAxisG.select('.axis-label'))
       .attr('x', innerWidth / 2)
       .text(xAxisLabel);
-  
+
   const circles = g.merge(gEnter)
     .selectAll('circle').data(data);
+
+  let toolTip = d3.select('body')
+    .append("div")
+      .attr('id', 'myToolTip')
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
 
   circles
     .enter()
@@ -29919,6 +29943,9 @@ const drawScatter = (selection, props) => {
       .attr('cx', innerWidth / 2) //during enter selection, we give x and y cooridates to determine where the circles enters from. in this case the center
       .attr('cy', innerHeight / 2)
       .attr('r', 0)
+      .on("mouseover", () => toolTip.style("visibility", "visible"))
+      .on("mousemove", (d) => toolTip.html(d.Player).style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"))
+      .on("mouseout", () => toolTip.style("visibility", "hidden"))
     .merge(circles)
       .transition()
       .duration(1000)
@@ -29926,6 +29953,8 @@ const drawScatter = (selection, props) => {
       .attr('cy', d => yScale(yValue(d)))
       .attr('cx', d => xScale(xValue(d)))
       .attr('r', circleRadius);
+
+  circles.exit().remove();
 
 };
 

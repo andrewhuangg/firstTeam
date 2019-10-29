@@ -28,17 +28,18 @@ let positions = ['PG', 'SG', 'SF', 'PF', 'C'];
 let xColumn;
 let yColumn;
 let pos;
+let year;
+let circleRadius = 8;
 
 loadData().then(data => {
-  xColumn = columns[0];
-  yColumn = columns[1];
   // drawBar(data, currentPos, currentStat, currentYear);
-  // drawScatter(data, currentPos, currentStat, currentYear, columns);
 
+  console.log(year, pos)
+  
   const xColumnClicked = (column) => {
     xColumn = column;
     svgSc.call(drawScatter, {
-      circleRadius: 5,
+      circleRadius: circleRadius,
       xValue: d => d[xColumn],
       xAxisLabel: xColumn,
       yValue: d => d[yColumn],
@@ -46,6 +47,8 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
+      pos,
+      year,
       data,
     });
   };
@@ -54,7 +57,7 @@ loadData().then(data => {
     yColumn = column;
 
     svgSc.call(drawScatter, {
-      circleRadius: 5,
+      circleRadius: circleRadius,
       xValue: d => d[xColumn],
       xAxisLabel: xColumn,
       yValue: d => d[yColumn],
@@ -62,6 +65,8 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
+      pos,
+      year,
       data,
     });
   };
@@ -77,6 +82,8 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
+      pos,
+      year,
       data: data.filter(d => d.Year === parseInt(year))
     });
   };
@@ -84,7 +91,7 @@ loadData().then(data => {
   const selectedPos = (pos) => {
 
     svgSc.call(drawScatter, {
-      circleRadius: 5,
+      circleRadius: circleRadius,
       xValue: d => d[xColumn],
       xAxisLabel: xColumn,
       yValue: d => d[yColumn],
@@ -92,7 +99,9 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      data: data.filter(d => d[pos])
+      pos,
+      year,
+      data: data.filter(d => d.Pos === pos)
     });
   };
 
@@ -122,8 +131,10 @@ loadData().then(data => {
       onOptionClicked: selectedPos
     });
 
+  xColumn = columns[0];
+  yColumn = columns[1];
   svgSc.call(drawScatter, {
-    circleRadius: 5,
+    circleRadius: circleRadius,
     xValue: d => d[xColumn],
     xAxisLabel: xColumn,
     yValue: d => d[yColumn],
@@ -131,7 +142,7 @@ loadData().then(data => {
     margin: { top: 80, right: 20, bottom: 20, left: 125 },
     widthSc,
     heightSc,
-    data,
+    data
   });
 
 });

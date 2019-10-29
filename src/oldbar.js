@@ -1,153 +1,68 @@
-// import { nice } from 'd3';
+// import {
+//   select,
+//   scaleLinear,
+//   scaleBand,
+//   axisLeft,
+//   axisTop,
+//   max,
+// }
+//   from 'd3';
 
-// export const createBar = (width, height) => {
-//   let bar = 
-//     d3.select('#bar')
-//       .attr('width', width)
-//       .attr('height', height)
+// //domain = dataspace
+// //range = screen space
 
-//   bar.append('g')
-//     .classed('x-axis', true)
- 
-//   bar.append('g')
-//     .classed('y-axis', true);
+// const svg = select('#bar');
+// const width = +svg.attr('width');
+// const height = +svg.attr('height');
 
-//   bar.append('text')
-//     .attr('transform', 'rotate(-90)')
-//     .attr('x', - height / 2)
-//     .style('text-anchor', 'middle')
-//     .style('font-size', '1em')
-//     .classed('y-axis-label', true);
+// export const drawBar = (data, pos, stat, year) => {
+//   const margin = { top: 80, right: 20, bottom: 20, left: 125 };
+//   const innerWidth = width - margin.left - margin.right;
+//   const innerHeight = height - margin.top - margin.bottom;
 
-//   bar.append('text')
-//     .attr('x', width / 2)
-//     .attr('y', '1em')
-//     .attr('font-size', '1.5em')
-//     .style('text-anchor', 'middle')
-//     .classed('bar-title', true);
-// };
+//   const xScale = scaleLinear()
+//     .domain([0, max(data, d => d[stat])]) //0 to max stat
+//     .range([0, innerWidth]) //the bars will go as far as the width of the container
+//     .nice();
 
-// export const highlightBars = (year) => {
-//   d3.select('#bar')
-//     .selectAll('rect')
-//       .attr('fill', d => d.year === year ? '#16a085' : '#1abc9c');
-// };
+//   const yScale = scaleBand() //useful for ordinal attributes - mapping onto a range defined by beginning points of rectangles
+//     .domain(data.map(d => d.Player))
+//     .range([0, innerHeight]) //range 0 to height will cause data elements to be arranged from top to bottom
+//     .padding(0.1)
 
-// export const drawBar = (data, currentYear, currentPos, currentStat) => {
-//   let bar = d3.select('#bar');
-//   let margin = {
-//     top: 30,
-//     right: 30,
-//     bottom: 30,
-//     left: 10 //10
-//   };
-//   let barPadding = 1;
-//   let width = +bar.attr("width");
-//   let height = +bar.attr("height");
-//   let innerWidth = width - margin.left - margin.right;
-//   let innerHeight = height - margin.top - margin.bottom;
+//   const g = svg.append('g')
+//     .attr('transform', `translate(${margin.left},${margin.top})`) //origin is top left corner, to get the g towards center, we translate margin left and margiht right
 
-//   // const g = bar.append('g')
-//   //   .attr('transform', `translate(20, 20)`);
-//     // .attr('transform', `translate(${margin.left}, ${margin.right})`);
+//   g.append('g')
+//     .call(axisLeft(yScale))//putting yaxis here and grouping all of them
+//     .selectAll('.domain, .tick line') //selecting parent domain, and all line elements from the tick class
+//     .remove();
 
-//   //posData organized by Year
-//   let posData = 
-//     data.filter(d => d.POS === currentPos)
-//       .sort((a, b) => a.Year - b.Year)
-  
-//   //players organized by stat, decreasing - increasing
-//   let players = 
-//     posData.sort((a, b) => b[currentStat] - a[currentStat])
-//       .slice(0, 20);
-  
+//   const xAxis = axisTop(xScale).tickSize(-innerHeight)
+//   const xAxisG = g.append('g').call(xAxis) //group element for xAxis
 
-//   let xScale = 
-//     d3.scaleBand()
-//       .domain(players.map(d => d.Player))
-//       .range([0, innerWidth])
-//       // .range([margin.left, width - margin.right])
-//       // .padding(0.1)
-//       // .range([0, width])
-//       // .padding(0.1)
+//   xAxisG
+//     .selectAll('.domain').remove(); //selecting parent domain and removing them
 
-//   //when we append rect, we need to set range and height to x and yscales
-//   let yScale = 
-//     d3.scaleLinear()
-//       .domain([0, d3.max(players, d => d[currentStat])])
-//       .range([innerHeight, 0])
-//       .nice()
+//   xAxisG.append('text')
+//     .attr('y', -30) //controls the text on the xaxis .. moving it up and down
+//     .attr('x', innerWidth / 2) //center
+//     .attr('fill', 'black')
+//     .text(`${stat}`)
 
-//   let barWidth = yScale(yScale.domain()[0] + 1) - yScale.range()[0];
-
-//   let xAxis = d3.axisBottom(xScale)
-
-//   let yAxis = d3.axisLeft(yScale);
-
-//   // g.append('g').call(yAxis)
-//   d3.select('.y-axis')
-//     .attr('transform', `translate(30, 0)`)
-//     .transition()
-//     .duration(1000)
-//     .call(yAxis);
-
-//   // g.append('g').call(xAxis)
-//   d3.select('.x-axis')
-//     .attr('transform', `translate(0, ${innerHeight})`)
-//     .transition()
-//     .duration(1000)
-//     .call(xAxis)
-//     .selectAll('text')
-//     .style('text-anchor', 'end')
-//     .attr("transform", "rotate(-90)")
-
-//   let axisLabel = currentStat === 
-//     "AST" ? `${currentStat} for year ${currentYear}` :
-//     currentStat === "REB" ? `${currentStat} for year ${currentYear}` :
-//     currentStat === "STL" ? `${currentStat} for year ${currentYear}` :
-//     currentStat === "BLK" ? `${currentStat} for year ${currentYear}` : 
-//     currentStat === "PTS" ? `${currentStat} for year ${currentYear}` :
-//     currentStat === "FG" ? `${currentStat} for year ${currentYear}` :
-//     currentStat === "FT" ? `${currentStat} for year ${currentYear}` :
-//     currentStat === "ThreePointers" ? `${currentStat} for year ${currentYear}` : 
-//     `TOV for year ${currentYear}`;
- 
-//   let barTitle = currentPos ? `${currentPos} stats for ${currentYear}` : `please select a year to see annual trends`;
-
-//   d3.select(".y-axis-label")
-//     .text(axisLabel);
-
-//   d3.select(".bar-title")
-//     .text(barTitle);
-
-//   let t = 
-//     d3.transition()
-//       .duration(1000)
-//       .ease(d3.easeBounceOut);
-
-//   let update = 
-//     bar.selectAll('.bar')
-//        .data(players)
-  
-//   update
-//     .exit()
-//     .transition(t)
-//       .delay((d, i, nodes) => (nodes.length - i - 1) * 100)
-//       .attr('y', height - margin.bottom)
-//       .attr('height', 0)
-//       .remove();
-
-//   update
+//   g.selectAll('rect')
+//     .data(data) // appending rectangles to g now instead of svg bc thats where we want to start drawing // svg.selectAll was replaced by g.selectAll
 //     .enter()
 //     .append('rect')
-//       .classed('bar', true)
-//       .attr('y', height) //how far the bar is from the top of graph
-//       .attr('height', 0) //where it starts
-//     .merge(update)
-//       .attr('x', d => xScale(d.Player) + 25) //how this is spread across the graph
-//       .attr('width', d => xScale.bandwidth() / 2) //how wide the bars are
-//       .transition(t)
-//       .delay((d, i) => i * 100)
-//         .attr('y', d => yScale(d[currentStat]) - 60) //distance between bar and top of graph
-//         .attr('height', d => height - yScale(d[currentStat]))//- margin.bottom)//- 90) //how tall the bars are
-// };      
+//     .attr('y', d => yScale(d.Player))
+//     .attr('width', d => xScale(d[stat])) // using xscale to compute width of bars. (d is one row of data table and returns xScale of our value, now we have rectangles of different widths)
+//     .attr('height', yScale.bandwidth()) //bandwidth is the computed width of a single bar
+//     .attr('class', 'bar')
+
+//   g.append('text')
+//     .attr('y', -50) //y coordinate of label..
+//     .attr('x', innerWidth / 4)
+//     .text('Top players per position')
+
+
+// };

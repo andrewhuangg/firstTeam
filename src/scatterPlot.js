@@ -4,7 +4,7 @@ import {
   extent,
   axisLeft,
   axisTop,
-  max,
+  max
 }
 from 'd3';
 
@@ -23,6 +23,8 @@ export const drawScatter = (selection, props) => {
     widthSc,
     heightSc,
     data,
+    pos,
+    year, //parseInt this because year is a string from dropdown
   } = props;
 
   const innerWidth = widthSc - margin.left - margin.right;
@@ -33,6 +35,8 @@ export const drawScatter = (selection, props) => {
     .range([0, innerWidth])
     .nice();
 
+    console.log(data)
+    console.log(pos, year)
   const yScale = scaleLinear()
     .domain(extent(data, yValue))
     .range([innerHeight, 0])
@@ -92,9 +96,16 @@ export const drawScatter = (selection, props) => {
     .merge(xAxisG.select('.axis-label'))
       .attr('x', innerWidth / 2)
       .text(xAxisLabel);
-  
+
   const circles = g.merge(gEnter)
     .selectAll('circle').data(data);
+
+  let toolTip = d3.select('body')
+    .append("div")
+      .attr('id', 'myToolTip')
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
 
   circles
     .enter()
@@ -102,6 +113,9 @@ export const drawScatter = (selection, props) => {
       .attr('cx', innerWidth / 2) //during enter selection, we give x and y cooridates to determine where the circles enters from. in this case the center
       .attr('cy', innerHeight / 2)
       .attr('r', 0)
+      .on("mouseover", () => toolTip.style("visibility", "visible"))
+      .on("mousemove", (d) => toolTip.html(d.Player).style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"))
+      .on("mouseout", () => toolTip.style("visibility", "hidden"))
     .merge(circles)
       .transition()
       .duration(1000)
@@ -109,5 +123,7 @@ export const drawScatter = (selection, props) => {
       .attr('cy', d => yScale(yValue(d)))
       .attr('cx', d => xScale(xValue(d)))
       .attr('r', circleRadius);
+
+  circles.exit().remove();
 
 };
