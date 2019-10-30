@@ -21,8 +21,6 @@ export const loadData = () =>
         d.STL = +d.STL;
         d.TRB = +d.TRB;
         d.ThreePointers = +d.ThreePointers;
-        d.FGpct = +d.FGpct;
-        d.FTpct = +d.FTpct;
         d.G = +d.G;
         d.GS = +d.GS;
       });

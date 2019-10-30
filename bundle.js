@@ -29249,19 +29249,18 @@ const drawBar = (selection, props) => {
     widthB,
     heightB,
     data,
-    pos,
-    year,
     xAxisLabel
   } = props;
-
+  console.log(data)
+  
   const innerWidth = widthB - margin.left - margin.right;
   const innerHeight = heightB - margin.top - margin.bottom;
-
+  
   const xScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"])()
-    .domain([0, Object(d3__WEBPACK_IMPORTED_MODULE_0__["max"])(data, xValue)]) 
-    .range([0, innerWidth])
-    .nice();
-    
+  .domain([0, Object(d3__WEBPACK_IMPORTED_MODULE_0__["max"])(data, xValue)]) 
+  .range([0, innerWidth])
+  .nice();
+  
   const yScale = Object(d3__WEBPACK_IMPORTED_MODULE_0__["scaleBand"])()
     .domain(data.map(yValue))
     .range([0, innerHeight])
@@ -29309,8 +29308,16 @@ const drawBar = (selection, props) => {
   const rects = g.merge(gEnter)
     .selectAll('rect').data(data)
 
+  let t = d3.transition()
+    .duration(1000)
+    .ease(d3.easeBounceOut);
+
   rects.enter().append('rect')
+    .attr('x', 0)
+    .attr('y', d => yScale(yValue(d)))
     .merge(rects)
+    .transition(t)
+    .delay((d, i) => i * 10)
       .attr('y', d => yScale(yValue(d)))
       .attr('width', d => xScale(xValue(d)))
       .attr('height', yScale.bandwidth())
@@ -29321,7 +29328,12 @@ const drawBar = (selection, props) => {
     .attr('x', innerWidth / 4)
     .text('Top players per position')
 
-  rects.exit().remove()
+  rects.exit()
+    .transition(t)
+    .delay((d, i) => i * 5)
+    .attr('x', 0)
+    .attr('y', d => yScale(yValue(d)))
+    .remove()
 };
 
 /***/ }),
@@ -29475,8 +29487,6 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Year === parseInt(cyear))
         .filter(d => d.Pos === cpos)
     });
@@ -29494,8 +29504,6 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Year === parseInt(cyear))
         .filter(d => d.Pos === cpos)
     });
@@ -29512,10 +29520,18 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Year === parseInt(cyear))
         .filter(d => d.Pos === cpos)
+    });
+    svgB.call(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"], {
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthB,
+      heightB,
+      xValue: d => d[xCol],
+      yValue: d => d.Player,
+      xAxisLabel: xCol,
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear)),
     });
   };
 
@@ -29530,10 +29546,18 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Pos === cpos)
         .filter(d => d.Year === parseInt(cyear))
+    });
+    svgB.call(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"], {
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthB,
+      heightB,
+      xValue: d => d[xCol],
+      yValue: d => d.Player,
+      xAxisLabel: xCol,
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear)),
     });
   };
 
@@ -29546,8 +29570,6 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
       xValue: d => d[xCol],
       yValue: d => d.Player,
       xAxisLabel: xCol,
-      year,
-      pos,
       data: data.filter(d => d.Pos === cpos)
         .filter(d => d.Year === parseInt(cyear)),
     });
@@ -29605,9 +29627,7 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
     xValue: d => d[xCol],
     yValue: d => d.Player,
     xAxisLabel: xCol,
-    data,
-    year,
-    pos
+    data: data.slice(data.length / 2)
   });
 
 });
@@ -29645,8 +29665,6 @@ const loadData = () =>
         d.STL = +d.STL;
         d.TRB = +d.TRB;
         d.ThreePointers = +d.ThreePointers;
-        d.FGpct = +d.FGpct;
-        d.FTpct = +d.FTpct;
         d.G = +d.G;
         d.GS = +d.GS;
       });
@@ -29777,8 +29795,6 @@ const drawScatter = (selection, props) => {
     widthSc,
     heightSc,
     data,
-    pos,
-    year,
   } = props;
 
   const innerWidth = widthSc - margin.left - margin.right;

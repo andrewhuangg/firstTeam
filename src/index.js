@@ -44,8 +44,6 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Year === parseInt(cyear))
         .filter(d => d.Pos === cpos)
     });
@@ -63,8 +61,6 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Year === parseInt(cyear))
         .filter(d => d.Pos === cpos)
     });
@@ -81,10 +77,18 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Year === parseInt(cyear))
         .filter(d => d.Pos === cpos)
+    });
+    svgB.call(drawBar, {
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthB,
+      heightB,
+      xValue: d => d[xCol],
+      yValue: d => d.Player,
+      xAxisLabel: xCol,
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear)),
     });
   };
 
@@ -99,10 +103,18 @@ loadData().then(data => {
       margin: { top: 80, right: 20, bottom: 20, left: 125 },
       widthSc,
       heightSc,
-      pos,
-      year,
       data: data.filter(d => d.Pos === cpos)
         .filter(d => d.Year === parseInt(cyear))
+    });
+    svgB.call(drawBar, {
+      margin: { top: 80, right: 20, bottom: 20, left: 125 },
+      widthB,
+      heightB,
+      xValue: d => d[xCol],
+      yValue: d => d.Player,
+      xAxisLabel: xCol,
+      data: data.filter(d => d.Pos === cpos)
+        .filter(d => d.Year === parseInt(cyear)),
     });
   };
 
@@ -115,8 +127,6 @@ loadData().then(data => {
       xValue: d => d[xCol],
       yValue: d => d.Player,
       xAxisLabel: xCol,
-      year,
-      pos,
       data: data.filter(d => d.Pos === cpos)
         .filter(d => d.Year === parseInt(cyear)),
     });
@@ -174,9 +184,7 @@ loadData().then(data => {
     xValue: d => d[xCol],
     yValue: d => d.Player,
     xAxisLabel: xCol,
-    data,
-    year,
-    pos
+    data: data.slice(data.length / 2)
   });
 
 });

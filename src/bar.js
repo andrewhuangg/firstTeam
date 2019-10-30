@@ -1,5 +1,4 @@
 import {
-  select,
   scaleLinear, 
   scaleBand,
   axisLeft,
@@ -16,19 +15,18 @@ export const drawBar = (selection, props) => {
     widthB,
     heightB,
     data,
-    pos,
-    year,
     xAxisLabel
   } = props;
-
+  console.log(data)
+  
   const innerWidth = widthB - margin.left - margin.right;
   const innerHeight = heightB - margin.top - margin.bottom;
-
+  
   const xScale = scaleLinear()
-    .domain([0, max(data, xValue)]) 
-    .range([0, innerWidth])
-    .nice();
-    
+  .domain([0, max(data, xValue)]) 
+  .range([0, innerWidth])
+  .nice();
+  
   const yScale = scaleBand()
     .domain(data.map(yValue))
     .range([0, innerHeight])
@@ -76,8 +74,16 @@ export const drawBar = (selection, props) => {
   const rects = g.merge(gEnter)
     .selectAll('rect').data(data)
 
+  let t = d3.transition()
+    .duration(1000)
+    .ease(d3.easeBounceOut);
+
   rects.enter().append('rect')
+    .attr('x', 0)
+    .attr('y', d => yScale(yValue(d)))
     .merge(rects)
+    .transition(t)
+    .delay((d, i) => i * 10)
       .attr('y', d => yScale(yValue(d)))
       .attr('width', d => xScale(xValue(d)))
       .attr('height', yScale.bandwidth())
@@ -88,5 +94,10 @@ export const drawBar = (selection, props) => {
     .attr('x', innerWidth / 4)
     .text('Top players per position')
 
-  rects.exit().remove()
+  rects.exit()
+    .transition(t)
+    .delay((d, i) => i * 5)
+    .attr('x', 0)
+    .attr('y', d => yScale(yValue(d)))
+    .remove()
 };

@@ -1,10 +1,8 @@
 import {
-  select,
   scaleLinear,
   extent,
   axisLeft,
   axisTop,
-  max
 }
 from 'd3';
 
@@ -19,8 +17,6 @@ export const drawScatter = (selection, props) => {
     widthSc,
     heightSc,
     data,
-    pos,
-    year,
   } = props;
 
   const innerWidth = widthSc - margin.left - margin.right;
