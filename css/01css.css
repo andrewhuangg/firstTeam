@@ -49,10 +49,26 @@ circle:hover {
   opacity: 0.9;
 }
 
+rect:hover {
+  fill: rgb(34, 238, 194);
+  opacity: 0.9;
+}
+
 text {
   font-size: 1em;
 }
 
 .tick line {
   stroke-width: 0.5px;
+}
+
+#myToolTip {
+  position: absolute;
+  text-align: center;
+  padding: .5rem;
+  background: #FFFFFF;
+  color: #313639;
+  border: 1px solid #313639;
+  border-radius: 8px;
+  font-size: 1rem
 }

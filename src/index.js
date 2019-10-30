@@ -174,7 +174,8 @@ loadData().then(data => {
     margin: { top: 80, right: 20, bottom: 20, left: 125 },
     widthSc,
     heightSc,
-    data
+    data: data.filter(d => d.Pos === cpos)
+      .filter(d => d.Year === cyear)
   });
   
   svgB.call(drawBar, {
@@ -184,7 +185,8 @@ loadData().then(data => {
     xValue: d => d[xCol],
     yValue: d => d.Player,
     xAxisLabel: xCol,
-    data: data.slice(data.length / 2)
+    data: data.filter(d => d.Pos === cpos)
+      .filter(d => d.Year === cyear)
   });
 
 });

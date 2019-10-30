@@ -29268,7 +29268,7 @@ const drawBar = (selection, props) => {
 
   const g = selection.selectAll('.bar-container').data([null]);
   const gEnter = g.enter().append('g')
-    .attr('class', 'bar-container')
+    .attr('class', 'bar-container');
 
   gEnter.merge(g)
     .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -29306,34 +29306,46 @@ const drawBar = (selection, props) => {
       .text(xAxisLabel);
   
   const rects = g.merge(gEnter)
-    .selectAll('rect').data(data)
+    .selectAll('rect').data(data);
 
-  let t = d3.transition()
-    .duration(1000)
-    .ease(d3.easeBounceOut);
+  let toolTip = d3.select('body')
+    .append("div")
+      .attr('id', 'myToolTip')
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden");
+  
 
   rects.enter().append('rect')
     .attr('x', 0)
     .attr('y', d => yScale(yValue(d)))
+    .on("mouseover", () => toolTip.style("visibility", "visible"))
+    .on("mousemove", (d) => toolTip.html(d.G + d.Player).style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"))
+    .on("mouseout", () => toolTip.style("visibility", "hidden"))
     .merge(rects)
-    .transition(t)
-    .delay((d, i) => i * 10)
+    .transition()
+    .duration(1000)
+    .attr('width', d => xScale(xValue(d)))
+    .delay((d, i) => i * 15)
       .attr('y', d => yScale(yValue(d)))
       .attr('width', d => xScale(xValue(d)))
       .attr('height', yScale.bandwidth())
       .attr('class', 'bar');
 
+
   g.append('text')
-    .attr('y', -50)
-    .attr('x', innerWidth / 4)
-    .text('Top players per position')
+      .attr('y', -50)
+      .attr('x', innerWidth / 4)
+    .text('Top players per position');
 
   rects.exit()
-    .transition(t)
-    .delay((d, i) => i * 5)
-    .attr('x', 0)
-    .attr('y', d => yScale(yValue(d)))
-    .remove()
+    .transition()
+    .duration(1000)
+    .attr('width', d => xScale(xValue(d)))
+    .delay((d, i) => i * 1)
+      .attr('x', 0)
+      .attr('y', innerHeight / 2)
+    .remove();
 };
 
 /***/ }),
@@ -29617,7 +29629,8 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
     margin: { top: 80, right: 20, bottom: 20, left: 125 },
     widthSc,
     heightSc,
-    data
+    data: data.filter(d => d.Pos === cpos)
+      .filter(d => d.Year === cyear)
   });
   
   svgB.call(_bar__WEBPACK_IMPORTED_MODULE_2__["drawBar"], {
@@ -29627,7 +29640,8 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
     xValue: d => d[xCol],
     yValue: d => d.Player,
     xAxisLabel: xCol,
-    data: data.slice(data.length / 2)
+    data: data.filter(d => d.Pos === cpos)
+      .filter(d => d.Year === cyear)
   });
 
 });
@@ -29683,7 +29697,7 @@ const loadData = () =>
           if (a.STL >= b.STL) return -1;
           if (a.STL < b.STL) return 1;
         })
-        .slice(0, 50);
+        .slice(0, 100);
 
       let sgData = data
         .filter(player => player.Pos === 'SG' && player.GS > 30)
@@ -29699,7 +29713,7 @@ const loadData = () =>
           if (a.TRB >= b.TRB) return -1;
           if (a.TRB < b.TRB) return 1;
         })
-        .slice(0, 50);
+        .slice(0, 100);
 
 
       let sfData = data
@@ -29718,7 +29732,7 @@ const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 50);
+        .slice(0, 100);
 
 
       let pfData = data
@@ -29741,7 +29755,7 @@ const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 50);
+        .slice(0, 100);
 
       let cData = data
         .filter(player => player.Pos === 'C' && player.GS > 30)
@@ -29761,7 +29775,7 @@ const loadData = () =>
           if (a.AST >= b.AST) return -1;
           if (a.AST < b.AST) return 1;
         })
-        .slice(0, 50);
+        .slice(0, 100);
 
       //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);
