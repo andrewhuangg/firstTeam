@@ -11,30 +11,34 @@
 </head>
 
 <body>
+
   <div id="nav">
-    <h2>NBA DASHBOARD 2016-2019</h2>
-    <div id="year"></div>
-    <div id="pos"></div>
-    <p>
-      Select Position:
-    </p>
-    <p>Select a year, position, and stat to see trends!</p>
-    <span id="x-menu"></span>
-    <span id="y-menu"></span>
-    <span id="xBar"></span>
+    <h2>NBA DASHBOARD 2017-2019</h2>
+    <div class="navContainer">
+      <div class="filterContainer">
+        <p>Select Year: <span id="year"></span></p>
+        <p>Select Position: <span id="pos"></span></p>
+      </div>
+      <div class="scatterDiv">
+        <p>Select Stat for Scatter xPlot <span id="x-menu"></span></p>
+        <p>Select Stat for Scatter yPlot <span id="y-menu"></span></p>
+      </div>
+      <div class="barDiv>"></div>
+        <p>Select Stat for Bar Graph <span id="xBar"></span></p>
+      </div>
+    </div>
   </div>
+
   <section class="container">
     <div class="chart-container">
-      <svg id="scatter" width="500", height="500">
-      </svg>
+      <svg id="scatter" width="500", height="500"></svg>
     </div>
     <div class="bar-container">
-      <svg id="bar" width="500" height="960">
-      </svg>
+      <svg id="bar" width="500" height="960"></svg>
     </div>
   </section>
+
   <script src="https://d3js.org/d3.v5.js"></script>
   <script src='bundle.js'></script>
 </body>
-
 </html>

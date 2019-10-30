@@ -29251,7 +29251,6 @@ const drawBar = (selection, props) => {
     data,
     xAxisLabel
   } = props;
-  console.log(data)
   
   const innerWidth = widthB - margin.left - margin.right;
   const innerHeight = heightB - margin.top - margin.bottom;
@@ -29348,13 +29347,7 @@ const drawBar = (selection, props) => {
       .attr('y', d => yScale(yValue(d)))
       .attr('width', d => xScale(xValue(d)))
       .attr('height', yScale.bandwidth())
-      .attr('class', 'bar');
-
-
-  g.append('text')
-      .attr('y', -50)
-      .attr('x', innerWidth / 4)
-    .text('Top players per position');
+      .attr('class', 'bar')
 
   rects.exit()
     .transition()
@@ -29671,12 +29664,13 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
 /*!*************************!*\
   !*** ./src/loadData.js ***!
   \*************************/
-/*! exports provided: loadData */
+/*! exports provided: loadData, loadPlayerData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadData", function() { return loadData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadPlayerData", function() { return loadPlayerData; });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
@@ -29687,7 +29681,6 @@ const loadData = () =>
       Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/NBA_PPG_CSV_Master_2017_2019.csv')
     ])
     .then(([data]) => {
-    //top 20 of each position (pg, sg, sf, pf, c)
 
       data.forEach(d => {
         d.Year = +d.Year;
@@ -29795,10 +29788,133 @@ const loadData = () =>
         })
         .slice(0, 100);
 
-      //top 20 of every position
       let newData = pgData.concat(sgData, sfData, pfData, cData);
 
       return newData;
+    });
+
+const loadPlayerData = () =>
+  Promise
+    .all([
+      Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/NBA_PPG_CSV_Master_2017_2019.csv')
+    ])
+    .then(([data]) => {
+
+      data.forEach(d => {
+        d.Year = +d.Year;
+        d.PTS = +d.PTS;
+        d.AST = +d.AST;
+        d.BLK = +d.BLK;
+        d.STL = +d.STL;
+        d.TRB = +d.TRB;
+        d.ThreePointers = +d.ThreePointers;
+        d.G = +d.G;
+        d.GS = +d.GS;
+      });
+
+      let pgData = data
+        .filter(player => player.Pos === 'PG' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+        })
+        .slice(0, 100);
+
+      let sgData = data
+        .filter(player => player.Pos === 'SG' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+        })
+        .slice(0, 100);
+
+
+      let sfData = data
+        .filter(player => player.Pos === 'SF' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+          if (a.BLK >= b.BLK) return -1;
+          if (a.BLK < b.BLK) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+        })
+        .slice(0, 100);
+
+
+      let pfData = data
+        .filter(player => player.Pos === 'PF' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+          if (a.FTpct >= b.FTpct) return -1;
+          if (a.FTpct < b.FTpct) return 1;
+          if (a.FGpct >= b.FGpct) return -1;
+          if (a.FGpct < b.FGpct) return 1;
+          if (a.BLK >= b.BLK) return -1;
+          if (a.BLK < b.BLK) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.ThreePointers >= b.ThreePointers) return -1;
+          if (a.ThreePointers < b.ThreePointers) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+        })
+        .slice(0, 100);
+
+      let cData = data
+        .filter(player => player.Pos === 'C' && player.GS > 30)
+        .sort((a, b) => {
+          if (a.PTS >= b.PTS) return -1;
+          if (a.PTS < b.PTS) return 1;
+          if (a.TRB >= b.TRB) return -1;
+          if (a.TRB < b.TRB) return 1;
+          if (a.FTpct >= b.FTpct) return -1;
+          if (a.FTpct < b.FTpct) return 1;
+          if (a.FGpct >= b.FGpct) return -1;
+          if (a.FGpct < b.FGpct) return 1;
+          if (a.BLK >= b.BLK) return -1;
+          if (a.BLK < b.BLK) return 1;
+          if (a.STL >= b.STL) return -1;
+          if (a.STL < b.STL) return 1;
+          if (a.AST >= b.AST) return -1;
+          if (a.AST < b.AST) return 1;
+        })
+        .slice(0, 100);
+
+      let players = {};
+
+      let newData = pgData.concat(sgData, sfData, pfData, cData);
+      
+      newData.forEach(player => {
+        players[player.Player] = player
+      });
+
+      return players;
     });
 
 /***/ }),

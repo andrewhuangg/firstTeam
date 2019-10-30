@@ -18,7 +18,6 @@ export const drawBar = (selection, props) => {
     data,
     xAxisLabel
   } = props;
-  console.log(data)
   
   const innerWidth = widthB - margin.left - margin.right;
   const innerHeight = heightB - margin.top - margin.bottom;
@@ -115,13 +114,7 @@ export const drawBar = (selection, props) => {
       .attr('y', d => yScale(yValue(d)))
       .attr('width', d => xScale(xValue(d)))
       .attr('height', yScale.bandwidth())
-      .attr('class', 'bar');
-
-
-  g.append('text')
-      .attr('y', -50)
-      .attr('x', innerWidth / 4)
-    .text('Top players per position');
+      .attr('class', 'bar')
 
   rects.exit()
     .transition()
