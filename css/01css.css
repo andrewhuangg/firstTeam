@@ -63,12 +63,24 @@ text {
 }
 
 #myToolTip {
-  position: absolute;
-  text-align: center;
-  padding: .5rem;
+  display: flex;
+  flex-direction: column;
+  /* text-align: left; */
+  padding: .3rem;
   background: #FFFFFF;
   color: #313639;
   border: 1px solid #313639;
   border-radius: 8px;
-  font-size: 1rem
+  font-size: .8rem
+}
+
+.game {
+  background-color: #0f2c44;
+  padding: 0px 2px 0px 2px;
+  color: #71E0D1;
+}
+
+.tooltipText {
+  font-size: .75rem;
+  color: #F5D67B;
 }

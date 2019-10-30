@@ -87,8 +87,26 @@ export const drawBar = (selection, props) => {
     .attr('x', 0)
     .attr('y', d => yScale(yValue(d)))
     .on("mouseover", () => toolTip.style("visibility", "visible"))
-    .on("mousemove", (d) => toolTip.html(d.G + d.Player).style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"))
-    .on("mouseout", () => toolTip.style("visibility", "hidden"))
+    .on("mousemove", (d) => toolTip
+      .html(
+        `<div class="game"><span class="tooltipText">Team: </span> ${d.Tm}</div>` +
+        `<div class="game"><span class="tooltipText">Current Year: </span> ${d.Year}</div>` +
+        `<div class="game"> <span class="tooltipText">Number of games played: </span> ${d.G}</div>` + 
+        `<div class="game"><span class="tooltipText">Games started: </span> ${d.GS}</div>` + 
+        `<div class="game"><span class="tooltipText">Minutes Played: </span> ${d.MP}</div>` + 
+        `<div class="game"><span class="tooltipText">Player name: </span> ${d.Player}</div>` +
+        `<div class="game"><span class="tooltipText">points: </span> ${d.PTS}</div>` + 
+        `<div class="game"><span class="tooltipText">ast: </span> ${d.AST}</div>` +
+        `<div class="game"><span class="tooltipText">rebs: </span> ${d.TRB}</div>` +
+        `<div class="game"><span class="tooltipText">stls: </span> ${d.STL}</div>` +
+        `<div class="game"><span class="tooltipText">three pointers made: </span> ${d.ThreePointers}</div>` +
+        `<div class="game"><span class="tooltipText">fg%: </span> ${d.FGpct}</div>` +
+        `<div class="game"><span class="tooltipText">ft%: </span> ${d.FTpct}</div>` +
+        `<div class="game"><span class="tooltipText">effective fg%: </span> ${d.eFGpct}</div>` 
+        )
+      .style("top", (event.pageY - 10) + "px")
+      .style("left", (event.pageX + 10) + "px"))
+      .on("mouseout", () => toolTip.style("visibility", "hidden"))
     .merge(rects)
     .transition()
     .duration(1000)
