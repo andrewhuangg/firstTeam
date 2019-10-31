@@ -26,7 +26,7 @@ let xCol; //bar
 let yColumn;
 let cpos = positions[0];
 let cyear = yearsArr[0];
-let circleRadius = 8;
+let circleRadius = 12;
 
 loadData().then(data => {
   xCol = columns[3];

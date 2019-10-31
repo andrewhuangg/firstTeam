@@ -41,14 +41,6 @@ body {
   margin-left: 20px;
 }
 
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
 rect {
   fill: rgb(223, 154, 51)
 }
@@ -79,7 +71,6 @@ text {
 #myToolTip {
   display: flex;
   flex-direction: column;
-  /* text-align: left; */
   padding: .3rem;
   background: #FFFFFF;
   color: #313639;
@@ -101,6 +92,6 @@ text {
 
 .container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: flex-start;
 }

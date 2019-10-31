@@ -29331,6 +29331,7 @@ const drawBar = (selection, props) => {
         `<div class="game"><span class="tooltipText">ast: </span> ${d.AST}</div>` +
         `<div class="game"><span class="tooltipText">rebs: </span> ${d.TRB}</div>` +
         `<div class="game"><span class="tooltipText">stls: </span> ${d.STL}</div>` +
+        `<div class="game"><span class="tooltipText">blks: </span> ${d.BLK}</div>` +
         `<div class="game"><span class="tooltipText">three pointers made: </span> ${d.ThreePointers}</div>` +
         `<div class="game"><span class="tooltipText">fg%: </span> ${d.FGpct}</div>` +
         `<div class="game"><span class="tooltipText">ft%: </span> ${d.FTpct}</div>` +
@@ -29494,7 +29495,7 @@ let xCol; //bar
 let yColumn;
 let cpos = positions[0];
 let cyear = yearsArr[0];
-let circleRadius = 8;
+let circleRadius = 12;
 
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   xCol = columns[3];
