@@ -29275,9 +29275,9 @@ const drawBar = (selection, props) => {
   const yAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"])(yScale)
     .tickPadding(10);
 
-  const yAxisG = g.select('.yb-axis');
+  const yAxisG = g.select('.yB-axis');
   const yAxisGEnter = gEnter
-    .append('g').attr('class', 'yb-axis');
+    .append('g').attr('class', 'yB-axis');
 
   yAxisG
     .merge(yAxisGEnter)
@@ -29286,9 +29286,9 @@ const drawBar = (selection, props) => {
       
   const xAxis = Object(d3__WEBPACK_IMPORTED_MODULE_0__["axisTop"])(xScale).tickSize(-innerHeight)
 
-  const xAxisG = g.select('.xb-axis');
+  const xAxisG = g.select('.xB-axis');
   const xAxisGEnter = gEnter
-    .append('g').attr('class', 'xb-axis');
+    .append('g').attr('class', 'xB-axis');
 
   xAxisG
     .merge(xAxisGEnter)
@@ -29297,10 +29297,10 @@ const drawBar = (selection, props) => {
 
   const xAxisLabelText = xAxisGEnter
     .append('text')
-      .attr('class', 'axisb-label')
+      .attr('class', 'axisB-label')
       .attr('y', -30)
       .attr('fill', 'black')
-    .merge(xAxisG.select('.axisb-label'))
+    .merge(xAxisG.select('.axisB-label'))
       .attr('x', innerWidth / 2)
       .text(xAxisLabel);
   
@@ -29470,7 +29470,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _loadData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./loadData */ "./src/loadData.js");
 /* harmony import */ var _bar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bar */ "./src/bar.js");
 /* harmony import */ var _scatterPlot__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scatterPlot */ "./src/scatterPlot.js");
-/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
+/* harmony import */ var _linegraph__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./linegraph */ "./src/linegraph.js");
+/* harmony import */ var _linegraph__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_linegraph__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _eventHandlers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./eventHandlers */ "./src/eventHandlers.js");
+
 
 
 
@@ -29492,7 +29495,6 @@ let yColumn;
 let cpos = positions[0];
 let cyear = yearsArr[0];
 let circleRadius = 8;
-
 
 Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   xCol = columns[3];
@@ -29599,34 +29601,34 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
   };
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#xBar')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleBarStat"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleBarStat"], {
       options: columns,
       onOptionClicked: xBarClicked,
       selectedOption: xCol
     });
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#x-menu')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterStat"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterStat"], {
       options: columns,
       onOptionClicked: xColumnClicked,
       selectedOption: xColumn
     });
   
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#y-menu')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterStat"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterStat"], {
       options: columns,
       onOptionClicked: yColumnClicked,
       selectedOption: yColumn
     });
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#year')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterYear"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterYear"], {
       options: yearsArr,
       onOptionClicked: selectedYear
     });
 
   Object(d3__WEBPACK_IMPORTED_MODULE_0__["select"])('#pos')
-    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_4__["handleScatterPos"], {
+    .call(_eventHandlers__WEBPACK_IMPORTED_MODULE_5__["handleScatterPos"], {
       options: positions,
       onOptionClicked: selectedPos
     });
@@ -29660,17 +29662,27 @@ Object(_loadData__WEBPACK_IMPORTED_MODULE_1__["loadData"])().then(data => {
 
 /***/ }),
 
+/***/ "./src/linegraph.js":
+/*!**************************!*\
+  !*** ./src/linegraph.js ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+
+
+/***/ }),
+
 /***/ "./src/loadData.js":
 /*!*************************!*\
   !*** ./src/loadData.js ***!
   \*************************/
-/*! exports provided: loadData, loadPlayerData */
+/*! exports provided: loadData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadData", function() { return loadData; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadPlayerData", function() { return loadPlayerData; });
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
@@ -29793,129 +29805,6 @@ const loadData = () =>
       return newData;
     });
 
-const loadPlayerData = () =>
-  Promise
-    .all([
-      Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/NBA_PPG_CSV_Master_2017_2019.csv')
-    ])
-    .then(([data]) => {
-
-      data.forEach(d => {
-        d.Year = +d.Year;
-        d.PTS = +d.PTS;
-        d.AST = +d.AST;
-        d.BLK = +d.BLK;
-        d.STL = +d.STL;
-        d.TRB = +d.TRB;
-        d.ThreePointers = +d.ThreePointers;
-        d.G = +d.G;
-        d.GS = +d.GS;
-      });
-
-      let pgData = data
-        .filter(player => player.Pos === 'PG' && player.GS > 30)
-        .sort((a, b) => {
-          if (a.PTS >= b.PTS) return -1;
-          if (a.PTS < b.PTS) return 1;
-          if (a.AST >= b.AST) return -1;
-          if (a.AST < b.AST) return 1;
-          if (a.TRB >= b.TRB) return -1;
-          if (a.TRB < b.TRB) return 1;
-          if (a.ThreePointers >= b.ThreePointers) return -1;
-          if (a.ThreePointers < b.ThreePointers) return 1;
-          if (a.STL >= b.STL) return -1;
-          if (a.STL < b.STL) return 1;
-        })
-        .slice(0, 100);
-
-      let sgData = data
-        .filter(player => player.Pos === 'SG' && player.GS > 30)
-        .sort((a, b) => {
-          if (a.PTS >= b.PTS) return -1;
-          if (a.PTS < b.PTS) return 1;
-          if (a.ThreePointers < b.ThreePointers) return 1;
-          if (a.ThreePointers >= b.ThreePointers) return -1;
-          if (a.AST >= b.AST) return -1;
-          if (a.AST < b.AST) return 1;
-          if (a.STL >= b.STL) return -1;
-          if (a.STL < b.STL) return 1;
-          if (a.TRB >= b.TRB) return -1;
-          if (a.TRB < b.TRB) return 1;
-        })
-        .slice(0, 100);
-
-
-      let sfData = data
-        .filter(player => player.Pos === 'SF' && player.GS > 30)
-        .sort((a, b) => {
-          if (a.PTS >= b.PTS) return -1;
-          if (a.PTS < b.PTS) return 1;
-          if (a.TRB >= b.TRB) return -1;
-          if (a.TRB < b.TRB) return 1;
-          if (a.BLK >= b.BLK) return -1;
-          if (a.BLK < b.BLK) return 1;
-          if (a.ThreePointers >= b.ThreePointers) return -1;
-          if (a.ThreePointers < b.ThreePointers) return 1;
-          if (a.STL >= b.STL) return -1;
-          if (a.STL < b.STL) return 1;
-          if (a.AST >= b.AST) return -1;
-          if (a.AST < b.AST) return 1;
-        })
-        .slice(0, 100);
-
-
-      let pfData = data
-        .filter(player => player.Pos === 'PF' && player.GS > 30)
-        .sort((a, b) => {
-          if (a.PTS >= b.PTS) return -1;
-          if (a.PTS < b.PTS) return 1;
-          if (a.TRB >= b.TRB) return -1;
-          if (a.TRB < b.TRB) return 1;
-          if (a.FTpct >= b.FTpct) return -1;
-          if (a.FTpct < b.FTpct) return 1;
-          if (a.FGpct >= b.FGpct) return -1;
-          if (a.FGpct < b.FGpct) return 1;
-          if (a.BLK >= b.BLK) return -1;
-          if (a.BLK < b.BLK) return 1;
-          if (a.STL >= b.STL) return -1;
-          if (a.STL < b.STL) return 1;
-          if (a.ThreePointers >= b.ThreePointers) return -1;
-          if (a.ThreePointers < b.ThreePointers) return 1;
-          if (a.AST >= b.AST) return -1;
-          if (a.AST < b.AST) return 1;
-        })
-        .slice(0, 100);
-
-      let cData = data
-        .filter(player => player.Pos === 'C' && player.GS > 30)
-        .sort((a, b) => {
-          if (a.PTS >= b.PTS) return -1;
-          if (a.PTS < b.PTS) return 1;
-          if (a.TRB >= b.TRB) return -1;
-          if (a.TRB < b.TRB) return 1;
-          if (a.FTpct >= b.FTpct) return -1;
-          if (a.FTpct < b.FTpct) return 1;
-          if (a.FGpct >= b.FGpct) return -1;
-          if (a.FGpct < b.FGpct) return 1;
-          if (a.BLK >= b.BLK) return -1;
-          if (a.BLK < b.BLK) return 1;
-          if (a.STL >= b.STL) return -1;
-          if (a.STL < b.STL) return 1;
-          if (a.AST >= b.AST) return -1;
-          if (a.AST < b.AST) return 1;
-        })
-        .slice(0, 100);
-
-      let players = {};
-
-      let newData = pgData.concat(sgData, sfData, pfData, cData);
-      
-      newData.forEach(player => {
-        players[player.Player] = player
-      });
-
-      return players;
-    });
 
 /***/ }),
 

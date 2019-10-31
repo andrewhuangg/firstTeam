@@ -42,9 +42,9 @@ export const drawBar = (selection, props) => {
   const yAxis = axisLeft(yScale)
     .tickPadding(10);
 
-  const yAxisG = g.select('.yb-axis');
+  const yAxisG = g.select('.yB-axis');
   const yAxisGEnter = gEnter
-    .append('g').attr('class', 'yb-axis');
+    .append('g').attr('class', 'yB-axis');
 
   yAxisG
     .merge(yAxisGEnter)
@@ -53,9 +53,9 @@ export const drawBar = (selection, props) => {
       
   const xAxis = axisTop(xScale).tickSize(-innerHeight)
 
-  const xAxisG = g.select('.xb-axis');
+  const xAxisG = g.select('.xB-axis');
   const xAxisGEnter = gEnter
-    .append('g').attr('class', 'xb-axis');
+    .append('g').attr('class', 'xB-axis');
 
   xAxisG
     .merge(xAxisGEnter)
@@ -64,10 +64,10 @@ export const drawBar = (selection, props) => {
 
   const xAxisLabelText = xAxisGEnter
     .append('text')
-      .attr('class', 'axisb-label')
+      .attr('class', 'axisB-label')
       .attr('y', -30)
       .attr('fill', 'black')
-    .merge(xAxisG.select('.axisb-label'))
+    .merge(xAxisG.select('.axisB-label'))
       .attr('x', innerWidth / 2)
       .text(xAxisLabel);
   

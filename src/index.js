@@ -1,9 +1,10 @@
 import { 
   select,
 } from 'd3';
-import { loadData } from './loadData';
+import { loadData, loadPlayerData } from './loadData';
 import { drawBar } from './bar';
 import { drawScatter } from './scatterPlot';
+import { drawLine } from './linegraph';
 import { 
   handleScatterStat,
   handleScatterYear,
@@ -26,7 +27,6 @@ let yColumn;
 let cpos = positions[0];
 let cyear = yearsArr[0];
 let circleRadius = 8;
-
 
 loadData().then(data => {
   xCol = columns[3];
