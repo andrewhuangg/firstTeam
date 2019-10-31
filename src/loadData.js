@@ -8,7 +8,7 @@ from 'd3';
 export const loadData = () => 
   Promise
     .all([
-      csv('../data/NBA_PPG_CSV_Master_2017_2019.csv')
+      csv('./data/NBA_PPG_CSV_Master_2017_2019.csv')
     ])
     .then(([data]) => {
 

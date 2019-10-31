@@ -29691,7 +29691,7 @@ __webpack_require__.r(__webpack_exports__);
 const loadData = () => 
   Promise
     .all([
-      Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('../data/NBA_PPG_CSV_Master_2017_2019.csv')
+      Object(d3__WEBPACK_IMPORTED_MODULE_0__["csv"])('./data/NBA_PPG_CSV_Master_2017_2019.csv')
     ])
     .then(([data]) => {
 
